@@ -183,3 +183,39 @@ node index.js            # 端口读 .env 里的 PORT=8096
 
 另外：静态资源（`/core/admin/static/**`）的响应头是 `Cache-Control: no-cache, no-store, must-revalidate`，
 改完刷新即生效，**不要**把"样式没生效"归因于浏览器缓存（我这次先误判过一次）。
+
+## 发版部署清单（脚本不入库，但这份知识必须入库）
+
+部署脚本 `tools/sync-today-to-server.ps1` **按设计不入库**（内含服务器地址与实例路径，见 `.gitignore`）。
+代价是：脚本里的**同步清单**只存在于操作者本机 —— 换机器或重建脚本时，那份"哪些文件必须同步"的
+知识就会丢。而"文件漏出清单"在本项目已经造成 **4 次**事故：
+
+| 次数 | 文件 | 后果 |
+|---|---|---|
+| 1 | `core/utils/tag-cloud-utils.js` | 标签别名只在部分路由生效，看起来像"功能没生效" |
+| 2 | `core/admin/static/js/table/modules/tabulator.js` | 修复只存在于服务器，仓库缺失 |
+| 3 | `content/themes/default/partials/footer.html` | 服务器与仓库长期不一致 |
+| 4 | 首页改版的 5 个主题文件 | **差点**：一旦后台配上广告位，`include` 找不到 partial 会 500 |
+
+所以把规则记在这里：
+
+1. 任何**运行时代码**（`core/**`、`content/themes/**`、`assets/**`、`tools/*.mjs`）的改动或新增，
+   都必须进 `$NewFiles` 或 `$ModifiedFiles` —— **只有这两组会随普通同步部署**。
+2. `$PulledFiles` **只在带 `-IncludePulled` 时**才同步。ember 主题的多数文件躺在这一组里，
+   改主题模板时务必确认同一文件也在前两组，否则同步会静默漏掉。
+3. 不部署的（已在 `.fingerprint-ignore` 列明）：`CHANGELOG.md`、`docs/**`、`TAG-GOVERNANCE.md`、
+   `DEPLOYMENT-AI-TAGS.md`，以及本机运维脚本 `tools/*.ps1`。
+4. 发版前先看清单：`.\tools\sync-today-to-server.ps1 -DryRun`；要当门禁就加 `-StrictManifest`
+   （脚本用 `git log --name-only` 对比最近改动，漏文件会报出来）。
+5. 同步并重启后核对：`node tools/instance-fingerprint.mjs --compare …`，目标 0/0/0。
+
+### 首页改版（v0.17.0）需要的 21 个运行时代码文件
+
+| 组 | 文件 |
+|---|---|
+| 主题 ember | `partials/home-banner.html`、`partials/category-cards.html`、`partials/header.html`、`templates/index.html`、`assets/css/style.css`、`assets/js/main.js` |
+| 后台页 | `admin/views/contents/homepage.html`、`admin/static/js/homepage.js`、`admin/static/css/homepage.css`、`admin/views/layouts/index.html`、`admin/views/components/head.html`、`admin/views/components/sidebar.html`、`admin/static/js/i18n.js`、`admin/routes.js` |
+| 接口与库 | `api/homepage-api.js`、`api/content-api.js`、`lib/homepage-store.js`、`utils/category-utils.js`、`lib/media/social-meta.js`、`routes/home.js`、`app.js` |
+
+> 另：`content/data/homepage.json` 是**实例数据**（不入库），线上首次在后台点「保存」时创建；
+> 已有文件时保存会先留一份 `.bak`。
