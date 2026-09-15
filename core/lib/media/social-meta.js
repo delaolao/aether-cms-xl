@@ -19,6 +19,9 @@ function escapeAttr(value) {
 /** Strip tags/entities from rendered HTML to build a plain-text description. */
 function htmlToText(html, limit = 200) {
     const text = String(html || "")
+        // HTML 注释里的文字不该进入描述：注释正文会被通用去标签规则留下
+        // （实测首页描述里混进了模板注释文字与分隔线）。
+        .replace(/<!--[\s\S]*?-->/g, " ")
         .replace(/<script[\s\S]*?<\/script>/gi, " ")
         .replace(/<style[\s\S]*?<\/style>/gi, " ")
         // Video facades carry UI copy ("▶ 37:59 … 在原站打开 ↗") — drop the whole
@@ -122,6 +125,9 @@ export function buildSocialMeta({ data = {}, req = null, html = "", siteSettings
 
     let description =
         metadata.seoDescription || metadata.excerpt || metadata.subtitle || ""
+    // 首页通常没有自己的摘要：应当用站点描述，而不是把整页渲染结果（导航、
+    // 轮播文案、卡片元信息…）抽成一段纯文本 —— 那会变成分享卡片上的乱码。
+    if (!description && isHome) description = htmlToText(site.siteDescription || "", 200)
     if (!description) description = htmlToText(data.content || html, 200)
     if (!description) description = site.siteDescription || ""
 
