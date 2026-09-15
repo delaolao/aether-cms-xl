@@ -19,9 +19,16 @@
 }
 .homepage-dashboard .btn-secondary,
 .homepage-dashboard .btn-primary {
-    display: inline-block;
-    padding: 0.45em 0.9em;
+    /* 与输入框统一盒子高度（admin.css 的基础 input 是 42px，本页是紧凑布局，
+       两者必须钉成同一个值，否则按钮会比输入框高一截、看起来"没对齐"） */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 34px;
+    padding: 0 0.9rem;
+    box-sizing: border-box;
     font-size: 0.85rem;
+    line-height: 1;
     border: 1px solid var(--border-color, #d5d9e0);
     border-radius: 6px;
     background: var(--bg-secondary, #f5f6f8);
@@ -144,7 +151,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
-    flex: 1 1 220px;
+    flex: 1 1 240px;
     min-width: 0;
 }
 .hp-field-wide {
@@ -156,8 +163,11 @@
 }
 .hp-field input[type="text"],
 .hp-field input[type="number"] {
-    padding: 0.4em 0.6em;
+    height: 34px;
+    padding: 0 0.6rem;
+    box-sizing: border-box;
     font-size: 0.85rem;
+    line-height: 32px;
     border: 1px solid var(--border-color, #d5d9e0);
     border-radius: 6px;
     background: var(--bg-primary, #fff);
@@ -207,7 +217,10 @@
 }
 .hp-field-inline input[type="number"] {
     width: 5.5em;
-    padding: 0.35em 0.5em;
+    height: 34px;
+    padding: 0 0.5rem;
+    box-sizing: border-box;
+    line-height: 32px;
     border: 1px solid var(--border-color, #d5d9e0);
     border-radius: 6px;
     background: var(--bg-primary, #fff);
