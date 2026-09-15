@@ -434,3 +434,8 @@ img { max-width: 100%; height: auto; }
     .banner-nav { display: none; }
     .banner-dots { right: 0.9rem; bottom: 0.9rem; }
 }
+
+/* 广告位：<picture> 需要撑满容器，否则窄屏换图后高度会塌 */
+.banner-slide picture { display: block; width: 100%; height: 100%; }
+/* 「纯图广告」形态：文字做在图片里，隐藏叠加文字层（后台每条广告可单独选择） */
+.banner-slide.is-image-only .banner-caption { display: none; }

@@ -1,20 +1,30 @@
 <!-- ============================================================
-     首页广告位（轮播：图片 + 文字，可点击跳转）
-     Phase 1 占位数据：这里直接写死 3 张真实课程封面 + 文案。
-     Phase 2 会改为读取 content/data/homepage.json 中后台维护的轮播项，
-     届时下面写死的 slide 会被一个 banners 循环替换掉。
-     ⚠️ 注意：STE 会解析 HTML 注释里的 mustache 语法，注释里写未配对的循环指令会直接把页面打成 500
-     无 JS 时只显示第一张（.is-active），不会空白。
+     首页广告位（轮播：图片 ＋ 可选文字，可点击跳转）
+     Phase 1 占位数据：这里写死 3 张图演示三种形态；Phase 2 改为读取
+     content/data/homepage.json 里后台维护的轮播项（这个文件会被循环替换）。
+
+     出图规格（2026-09-15 定）：桌面 1600x320（5:1）；手机图可选 750x320（2.34:1），
+     不传则用桌面图居中裁切（手机端只保留中央约 46% 宽 → 关键内容放中间 60% 内）。
+     文字：每条广告可单独选择「不叠加文字」（文字做在图里）。
+
+     ⚠️ STE 会解析 HTML 注释里的 mustache，注释里不要写未配对的模板指令（会 500）。
      ============================================================ -->
 <section class="home-banner" data-carousel data-interval="5000" aria-label="首页推荐">
     <div class="banner-viewport">
+
+        <!-- 形态①：叠加文字 ＋ 可选手机图（<picture> 在窄屏换图；没配手机图就删掉 <source>） -->
         <div class="banner-slide is-active" aria-hidden="false">
-            <img class="banner-image" src="https://stream.dleu.net/lazy-static/thumbnails/78b18e1c-1442-46ee-a64b-af8ab3008aa5.jpg" alt="大连市中小学心理健康教育资源库" />
+            <picture>
+                <source media="(max-width: 620px)" srcset="https://stream.dleu.net/lazy-static/thumbnails/78b18e1c-1442-46ee-a64b-af8ab3008aa5.jpg" />
+                <img class="banner-image" src="https://stream.dleu.net/lazy-static/thumbnails/78b18e1c-1442-46ee-a64b-af8ab3008aa5.jpg" alt="大连市中小学心理健康教育资源库" />
+            </picture>
             <span class="banner-caption">
                 <strong class="banner-title">{{ site.siteTitle }}</strong>
                 <span class="banner-subtitle">{{ site.siteDescription }}</span>
             </span>
         </div>
+
+        <!-- 形态②：叠加文字（无手机图），整块可点 -->
         <a class="banner-slide" href="/post/tishengyili-jujuetuoyan" aria-hidden="true">
             <img class="banner-image" src="https://stream.dleu.net/lazy-static/thumbnails/3e9674f1-de91-4702-b497-05c15c245cb7.jpg" alt="提升毅力 拒绝拖延" />
             <span class="banner-caption">
@@ -22,12 +32,10 @@
                 <span class="banner-subtitle">高中 · 心理微课 · 7:39</span>
             </span>
         </a>
-        <a class="banner-slide" href="/post/anwei-fangchengshi" aria-hidden="true">
+
+        <!-- 形态③：纯图广告（文字做在图里）—— 后台把「叠加文字」关掉就是这个形态 -->
+        <a class="banner-slide is-image-only" href="/post/anwei-fangchengshi" aria-hidden="true">
             <img class="banner-image" src="https://stream.dleu.net/lazy-static/thumbnails/ff592bc6-6234-405c-af52-32a6c24361ab.jpg" alt="安慰方程式-做一枚治愈系朋友" />
-            <span class="banner-caption">
-                <strong class="banner-title">安慰方程式-做一枚治愈系朋友</strong>
-                <span class="banner-subtitle">高中 · 心理微课 · 10:34</span>
-            </span>
         </a>
     </div>
 
