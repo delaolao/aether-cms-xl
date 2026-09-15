@@ -293,6 +293,9 @@ img { max-width: 100%; height: auto; }
 
 /* ---- 广告位轮播 ---- */
 .home-banner {
+    /* 广告位高度：对齐线上 hero 横幅的实际尺寸（1048 x 201px ≈ 5.2:1）。
+       想调高/调矮只改这一个值即可（例如 240px 放大、170px 更扁）。 */
+    --banner-h: clamp(160px, 19vw, 205px);
     position: relative;
     margin: 1.4rem 0 0;
     border-radius: var(--radius);
@@ -300,7 +303,7 @@ img { max-width: 100%; height: auto; }
     background: var(--ink);
     box-shadow: 0 10px 26px rgba(43, 45, 66, 0.16);
 }
-.banner-viewport { position: relative; aspect-ratio: 16 / 7; }
+.banner-viewport { position: relative; height: var(--banner-h); }
 .banner-slide {
     position: absolute;
     inset: 0;
@@ -318,13 +321,13 @@ img { max-width: 100%; height: auto; }
     inset: auto 0 0 0;
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
-    padding: 1.5rem 1.6rem 1.4rem;
-    background: linear-gradient(to top, rgba(28, 22, 19, 0.9), rgba(28, 22, 19, 0.45) 55%, transparent);
+    gap: 0.25rem;
+    padding: 1.15rem 1.5rem 1.05rem;
+    background: linear-gradient(to top, rgba(28, 22, 19, 0.92), rgba(28, 22, 19, 0.55) 45%, transparent);
     color: #fff;
 }
-.banner-title { font-size: 1.5rem; font-weight: 800; line-height: 1.32; }
-.banner-subtitle { font-size: 0.95rem; line-height: 1.55; color: #f6ece7; }
+.banner-title { font-size: 1.35rem; font-weight: 800; line-height: 1.3; }
+.banner-subtitle { font-size: 0.9rem; line-height: 1.5; color: #f6ece7; }
 .banner-nav {
     position: absolute;
     top: 50%;
@@ -420,13 +423,12 @@ img { max-width: 100%; height: auto; }
 /* ---- 响应式 ---- */
 @media (max-width: 900px) {
     .cat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .banner-viewport { aspect-ratio: 16 / 9; }
-    .banner-title { font-size: 1.3rem; }
+    .banner-title { font-size: 1.25rem; }
 }
 @media (max-width: 620px) {
     .cat-grid { grid-template-columns: 1fr; }
-    .banner-viewport { aspect-ratio: 4 / 3; }
-    .banner-caption { padding: 1rem; }
+    .home-banner { --banner-h: 150px; }
+    .banner-caption { padding: 0.9rem 1rem; }
     .banner-title { font-size: 1.1rem; }
     .banner-subtitle { display: none; }
     .banner-nav { display: none; }
