@@ -166,3 +166,20 @@ node index.js            # 端口读 .env 里的 PORT=8096
 > 踩坑记录：Phase 1 最初用 `aspect-ratio: 16/7`，在 1048px 宽下高 459px，是线上 hero（201px）的
 > 2.3 倍。改为**按高度控制**（`--banner-h: clamp(160px, 19vw, 205px)`）后才能既照搬线上比例、
 > 又不至于在手机上缩成一条细线。
+
+## 后台新增页面的注意点（2026-09-15 踩坑记录）
+
+后台的 `core/admin/static/css/admin.css` 里有几条**全局规则**，会给新页面带来意外布局问题。
+新增后台页面前，先用这三条对一遍自己的 CSS：
+
+| 全局规则 | 副作用 | 应对 |
+|---|---|---|
+| `label { display: block; margin-bottom: .5rem; }` | 把 `<label>` 当布局容器用时，它自带 8px 下外边距；flex 行里 `align-items: flex-end` 对齐的是**margin box 底边**，会把旁边的按钮整体下推 8px（表现为"按钮与输入框没水平对齐"） | 容器 label 上 `margin-bottom: 0` |
+| `input[type=…] { display: block; width: 100%; font-size: 1rem; line-height: 1.5; padding: .5rem .75rem; }` | 基础高度 42px；想做成紧凑布局必须自己钉 `height` + `box-sizing: border-box` | 输入框与相邻按钮**钉成同一个高度**（本页取 34px） |
+| `button, .btn { cursor: pointer; }` | 按钮没有统一高度，与输入框混排时会高低不一 | 按钮用 `inline-flex` + 固定 `height` + `align-items: center` |
+
+排查方法：把 `admin.css` 里所有 `label` / `input` / `button` 规则抓出来对一遍 ——
+只看自己写的 CSS 是找不到这类冲突的。
+
+另外：静态资源（`/core/admin/static/**`）的响应头是 `Cache-Control: no-cache, no-store, must-revalidate`，
+改完刷新即生效，**不要**把"样式没生效"归因于浏览器缓存（我这次先误判过一次）。
