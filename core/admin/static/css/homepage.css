@@ -1,0 +1,292 @@
+/* --- 后台「首页装修」页（/aether/homepage）：广告位轮播 + 资源分类卡片 --- */
+
+.homepage-dashboard .homepage-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+}
+.homepage-dashboard .homepage-header h1 {
+    margin: 0;
+}
+.homepage-dashboard .homepage-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+.homepage-dashboard .btn-secondary,
+.homepage-dashboard .btn-primary {
+    display: inline-block;
+    padding: 0.45em 0.9em;
+    font-size: 0.85rem;
+    border: 1px solid var(--border-color, #d5d9e0);
+    border-radius: 6px;
+    background: var(--bg-secondary, #f5f6f8);
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.homepage-dashboard .btn-primary {
+    border-color: var(--primary-color, #0066cc);
+    background: var(--primary-color, #0066cc);
+    color: #fff;
+    font-weight: 600;
+}
+.homepage-dashboard .btn-secondary:hover {
+    border-color: var(--primary-color, #0066cc);
+    color: var(--primary-color, #0066cc);
+}
+.homepage-dashboard .btn-secondary[disabled] {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+.homepage-dashboard .hp-danger:hover {
+    border-color: #c62828;
+    color: #c62828;
+}
+
+.homepage-status {
+    font-size: 0.82rem;
+    color: var(--text-secondary, #667);
+}
+.homepage-status.is-ok {
+    color: #2e7d32;
+    font-weight: 600;
+}
+.homepage-status.is-warn {
+    color: #ef6c00;
+    font-weight: 600;
+}
+.homepage-status.is-error {
+    color: #c62828;
+    font-weight: 600;
+}
+
+.homepage-note {
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--text-secondary, #667);
+    margin: 0 0 1rem;
+}
+.homepage-note code,
+.hp-list code {
+    font-size: 0.78rem;
+    background: var(--bg-secondary, #f0f2f5);
+    padding: 0.1em 0.4em;
+    border-radius: 4px;
+}
+.hint {
+    font-size: 0.78rem;
+    line-height: 1.6;
+    color: var(--text-secondary, #778);
+    margin: 0 0 0.8rem;
+}
+
+/* ---- 列表项 ---- */
+.hp-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    margin-bottom: 0.9rem;
+}
+.hp-item {
+    display: flex;
+    gap: 1rem;
+    padding: 0.9rem;
+    border: 1px solid var(--border-color, #e3e6ea);
+    border-radius: 8px;
+    background: var(--bg-primary, #fff);
+}
+.hp-item.is-off {
+    opacity: 0.66;
+    background: var(--bg-secondary, #fafbfc);
+}
+.hp-thumb {
+    flex: 0 0 190px;
+    height: 76px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 6px;
+    background: var(--bg-secondary, #f0f2f5);
+    border: 1px dashed var(--border-color, #d5d9e0);
+}
+.hp-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.hp-thumb-empty {
+    font-size: 0.75rem;
+    color: var(--text-secondary, #889);
+}
+.hp-fields {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.hp-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+.hp-row-flags {
+    align-items: center;
+}
+.hp-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    flex: 1 1 220px;
+    min-width: 0;
+}
+.hp-field-wide {
+    flex: 1 1 100%;
+}
+.hp-field > span {
+    font-size: 0.76rem;
+    color: var(--text-secondary, #667);
+}
+.hp-field input[type="text"],
+.hp-field input[type="number"] {
+    padding: 0.4em 0.6em;
+    font-size: 0.85rem;
+    border: 1px solid var(--border-color, #d5d9e0);
+    border-radius: 6px;
+    background: var(--bg-primary, #fff);
+    color: inherit;
+    min-width: 0;
+}
+.hp-field input[readonly] {
+    background: var(--bg-secondary, #f5f6f8);
+    color: var(--text-secondary, #667);
+}
+.hp-flag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.82rem;
+    white-space: nowrap;
+}
+.hp-count {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--primary-color, #0066cc);
+    padding-bottom: 0.45em;
+    white-space: nowrap;
+}
+.hp-count.is-muted {
+    color: var(--text-secondary, #889);
+    font-weight: 400;
+}
+.hp-item-actions {
+    margin-left: auto;
+    display: inline-flex;
+    gap: 0.35rem;
+}
+
+/* ---- 设置区 ---- */
+.hp-settings {
+    display: flex;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.hp-field-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.84rem;
+}
+.hp-field-inline input[type="number"] {
+    width: 5.5em;
+    padding: 0.35em 0.5em;
+    border: 1px solid var(--border-color, #d5d9e0);
+    border-radius: 6px;
+    background: var(--bg-primary, #fff);
+    color: inherit;
+}
+
+/* ---- 媒体选择面板 ---- */
+.hp-picker {
+    position: fixed;
+    right: 1.2rem;
+    bottom: 1.2rem;
+    z-index: 60;
+    width: min(620px, calc(100vw - 2.4rem));
+    max-height: min(70vh, 620px);
+    overflow: auto;
+    padding: 1rem;
+    border: 1px solid var(--border-color, #d5d9e0);
+    border-radius: 10px;
+    background: var(--bg-primary, #fff);
+    box-shadow: 0 18px 48px rgba(15, 23, 42, 0.22);
+}
+.hp-picker-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    margin-bottom: 0.6rem;
+}
+.hp-picker-tools {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.7rem;
+}
+.hp-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.6rem;
+}
+.hp-pick-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.3rem;
+    border: 1px solid var(--border-color, #e3e6ea);
+    border-radius: 8px;
+    background: var(--bg-primary, #fff);
+    cursor: pointer;
+    text-align: left;
+}
+.hp-pick-item:hover {
+    border-color: var(--primary-color, #0066cc);
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12);
+}
+.hp-pick-item img {
+    width: 100%;
+    height: 68px;
+    object-fit: cover;
+    border-radius: 5px;
+    background: var(--bg-secondary, #f0f2f5);
+}
+.hp-pick-item span {
+    font-size: 0.7rem;
+    color: var(--text-secondary, #667);
+    word-break: break-all;
+    line-height: 1.35;
+}
+
+@media (max-width: 720px) {
+    .hp-item {
+        flex-direction: column;
+    }
+    .hp-thumb {
+        flex: 0 0 auto;
+        width: 100%;
+        height: 120px;
+    }
+    .hp-item-actions {
+        margin-left: 0;
+    }
+}

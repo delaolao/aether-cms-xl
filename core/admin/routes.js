@@ -444,6 +444,27 @@ export function setupAdminRoutes(app, systems) {
         }
     })
 
+    // ------------------------------------------------------------------
+    // 首页装修（广告位轮播 + 资源分类卡片）
+    //
+    // 数据落在 content/data/homepage.json（实例数据，不入库），接口在
+    // /api/homepage（读/存）与 /api/categories（分类聚合）。
+    // 本页面只提供壳，列表由 core/admin/static/js/homepage.js 渲染。
+    // ------------------------------------------------------------------
+    app.get("/aether/homepage", authenticate, async (req, res) => {
+        try {
+            res.render("/core/admin/views/layouts/index.html", {
+                title: "Homepage",
+                user: req.user,
+                dashboardHomepage: true,
+                year: new Date().getFullYear(),
+            })
+        } catch (error) {
+            console.error("Homepage admin page error:", error)
+            res.status(500).html("<h1>Error</h1><p>无法打开首页装修</p>")
+        }
+    })
+
     // CSV export of the article view ranking for the selected range
     app.get("/aether/analytics/export.csv", authenticate, async (req, res) => {
         try {

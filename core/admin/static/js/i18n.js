@@ -58,6 +58,11 @@
             nav_users: "用户",
             nav_settings: "设置",
             nav_maintenance: "系统维护",
+            nav_homepage: "首页装修",
+
+            // homepage decoration
+            hp_save: "保存",
+            hp_addBanner: "+ 新增一条广告",
 
             // maintenance
             maint_refresh: "重新体检",
@@ -490,6 +495,11 @@
             nav_users: "Users",
             nav_settings: "Settings",
             nav_maintenance: "Maintenance",
+            nav_homepage: "Homepage",
+
+            // homepage decoration
+            hp_save: "Save",
+            hp_addBanner: "+ Add banner",
 
             // maintenance
             maint_refresh: "Re-run checks",

@@ -439,3 +439,6 @@ img { max-width: 100%; height: auto; }
 .banner-slide picture { display: block; width: 100%; height: 100%; }
 /* 「纯图广告」形态：文字做在图片里，隐藏叠加文字层（后台每条广告可单独选择） */
 .banner-slide.is-image-only .banner-caption { display: none; }
+
+/* 无 JS 兜底：没有 is-active 类时第一张也要可见（轮播脚本被禁用/未加载的情况） */
+.banner-slide:first-child { opacity: 1; visibility: visible; z-index: 1; }

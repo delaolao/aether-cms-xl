@@ -1,9 +1,19 @@
+{{#if homepage.banners.length}}
 {{#include("partials/home-banner.html")}}
+{{#else}}
+<!-- 没有配置广告位时退回品牌横幅，首页不会出现空白头 -->
+<section class="hero-band">
+    <h1>{{ site.siteTitle }}</h1>
+    <p>{{ site.siteDescription }}</p>
+</section>
+{{/if}}
 
+{{#if homepage.categoryCards.length}}
 <section class="home-section">
     <h2 class="section-title">资源分类</h2>
     {{#include("partials/category-cards.html")}}
 </section>
+{{/if}}
 
 <section class="home-section">
     <h2 class="section-title">最新发布</h2>

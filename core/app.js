@@ -10,6 +10,7 @@ import { setupUserApi } from "./api/user-api.js"
 import { setupStaticApi } from "./api/static-api.js"
 import { setupPublicApi } from "./api/public-api.js"
 import { setupMaintenanceApi } from "./api/maintenance-api.js"
+import { setupHomepageApi } from "./api/homepage-api.js"
 
 // Import core libraries
 import { ThemeManager } from "./lib/theme/theme-manager.js"
@@ -538,6 +539,7 @@ export async function setupApp(app, config) {
     setupStaticApi(app, systems)
     setupPublicApi(app, systems) // /api/public/* + /oembed (read-only, CORS open)
     setupMaintenanceApi(app, systems) // /api/maintenance/* (admin only: 只读体检 + 就地备份下载)
+    setupHomepageApi(app, systems) // /api/homepage (admin only: 首页装修配置)
 
     // Set global not found handler
     app.notFound(async (req, res) => {

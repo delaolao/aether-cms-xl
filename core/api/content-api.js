@@ -55,6 +55,21 @@ export function setupContentApi(app, systems) {
         }
     })
 
+    // Category list with counts. Public like /api/tags and /api/stages: the admin
+    // 「首页装修」页 needs it to build category cards, and the frontend may use it
+    // for category navigation. Categories are not entities of their own — they are
+    // aggregated from the `category` field of published posts.
+    app.get("/api/categories", async (req, res) => {
+        try {
+            const { collectCategoryCounts } = await import("../utils/category-utils.js")
+            const categories = await collectCategoryCounts(contentManager)
+            res.json({ success: true, categories, total: categories.length })
+        } catch (error) {
+            console.error("Category aggregation error:", error)
+            res.status(500).json({ success: false, error: error.message })
+        }
+    })
+
     // Wikilink index: title → URL map for [[wikilink]] resolution (used by the
     // admin editor preview to match frontend rendering).
     app.get("/api/wikilinks", authenticate, async (req, res) => {

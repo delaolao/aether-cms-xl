@@ -4,6 +4,46 @@
 
 > 版本号遵循语义化。
 
+## [0.17.0] - 2026-09-15
+
+### ✨ 首页改版（Phase 1 版式）+ 后台「首页装修」（Phase 2）
+
+使用方需求（结合截图）：首页 = 广告位轮播 → 资源分类卡片 → 最新发布；顶部导航只留 4 项。
+改动**仅限首页**（文章页/列表页/搜索页/视频库不动）。
+
+**Phase 1 — 首页版式（模板 + CSS）**
+
+- `partials/header.html`：前台导航改为白名单，只保留 首页 / 图谱 / 标签云 / 站内搜索
+  （后台「设置 → 菜单」不再影响前台导航）
+- `partials/home-banner.html`：广告位轮播（图片 + 可选文字，可点跳转），圆点 + 箭头，
+  5 秒自动播放、悬停暂停；支持**可选手机图**（picture/source）与**纯图广告**（不叠加文字）
+- `partials/category-cards.html`：资源分类卡片（图片 + 名称 + 篇数 + 说明），点击进 /category/<分类名>
+- `templates/index.html`：新结构；没有配置广告位时自动退回品牌横幅，不会出现空白头
+- 广告位高度按**高度**控制而非宽高比：`--banner-h: clamp(160px, 19vw, 205px)`，
+  与线上原 hero 横幅（1048x201px ≈ 5.2:1）基本一致；窄屏不会缩成细线
+
+**Phase 2 — 后台「首页装修」(/aether/homepage)**
+
+- `core/lib/homepage-store.js`：`content/data/homepage.json` 的读写与规范化（原子写入 + .bak 备份）
+- `core/utils/category-utils.js`：分类从文章聚合（分类不是实体，只是 frontmatter 字段）
+- `core/api/homepage-api.js`：`GET/PUT /api/homepage`（authenticate 保护）
+- `core/api/content-api.js`：新增公开接口 `GET /api/categories`（分类 + 篇数）
+- `core/routes/home.js`：首页注入 `homepage`（只含启用的广告位、已上线的分类卡片、图片 URL 已转好）
+- 后台页：广告位增删改排序 + 从媒体库选图/上传、轮播设置（自动播放/间隔/高度）、
+  分类卡片配图与上线开关；**新分类默认不上首页**，配好图再勾选
+- 分类与广告位**数量都不固定**，增减无需改代码
+
+### 🐛 顺手修掉一个线上既有问题：首页分享描述是乱码
+
+线上首页的 `og:description` 原本是「整页渲染结果抽成 200 字纯文本」——分享到微信/QQ 时显示
+导航文字、卡片元信息、甚至 HTML 注释里的内容。修复：首页改取站点描述（先剥标签），
+`htmlToText` 先剥离 HTML 注释。
+
+### 📌 STE 模板引擎的两个坑（已记入 docs/XL-PROJECT.md）
+
+- **HTML 注释里的 mustache 会被执行**：注释里写未配对的循环指令 → 整页 500
+- **不支持下标访问**：`{{posts.0.title}}` → 整页 500；"第 N 项"必须由后端给数据
+
 ## [0.16.4] - 2026-09-15
 
 ### ✨ 实例指纹支持忽略清单，例行核对终于能「归零」

@@ -57,6 +57,10 @@
                 <!-- Maintenance Content -->
                 {{#include("contents/maintenance.html")}}
                 <!---->
+                {{#elseif dashboardHomepage}}
+                <!-- Homepage Decoration Content -->
+                {{#include("contents/homepage.html")}}
+                <!---->
                 {{/if}}
             </main>
         </div>
@@ -122,6 +126,8 @@
         <script src="/core/admin/static/js/analytics.js"></script>
         {{#elseif dashboardMaintenance}}
         <script src="/core/admin/static/js/maintenance.js"></script>
+        {{#elseif dashboardHomepage}}
+        <script src="/core/admin/static/js/homepage.js"></script>
         {{/if}}
     </body>
 </html>

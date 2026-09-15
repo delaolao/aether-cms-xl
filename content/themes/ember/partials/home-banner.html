@@ -1,50 +1,47 @@
 <!-- ============================================================
-     首页广告位（轮播：图片 ＋ 可选文字，可点击跳转）
-     Phase 1 占位数据：这里写死 3 张图演示三种形态；Phase 2 改为读取
-     content/data/homepage.json 里后台维护的轮播项（这个文件会被循环替换）。
+     首页广告位轮播
+     数据来自 content/data/homepage.json（后台「首页装修」维护，与文章无关）。
 
-     出图规格（2026-09-15 定）：桌面 1600x320（5:1）；手机图可选 750x320（2.34:1），
-     不传则用桌面图居中裁切（手机端只保留中央约 46% 宽 → 关键内容放中间 60% 内）。
-     文字：每条广告可单独选择「不叠加文字」（文字做在图里）。
+     出图规格：桌面 1600x320（5:1）；手机图可选 750x320，不填则手机端用桌面图居中裁切
+     （手机端只保留中央约 46% 宽 → 关键内容放中间 60% 以内）。
+     文字：每条广告可单独关掉「叠加文字」（文字做在图里）。
 
+     无 JS 时：第一张靠 CSS :first-child 保持可见（见 style.css），不会空白。
      ⚠️ STE 会解析 HTML 注释里的 mustache，注释里不要写未配对的模板指令（会 500）。
      ============================================================ -->
-<section class="home-banner" data-carousel data-interval="5000" aria-label="首页推荐">
+{{#if homepage.banners.length}}
+<section class="home-banner" data-carousel data-interval="{{ homepage.settings.intervalMs }}" data-autoplay="{{#if homepage.settings.autoplay}}1{{#else}}0{{/if}}" style="--banner-h: {{ homepage.settings.bannerHeightPx }}px" aria-label="首页推荐">
     <div class="banner-viewport">
-
-        <!-- 形态①：叠加文字 ＋ 可选手机图（<picture> 在窄屏换图；没配手机图就删掉 <source>） -->
-        <div class="banner-slide is-active" aria-hidden="false">
+        {{#each homepage.banners}}
+        <a class="banner-slide" {{#if url}}href="{{ url }}"{{/if}}>
+            {{#if mobileImage}}
             <picture>
-                <source media="(max-width: 620px)" srcset="https://stream.dleu.net/lazy-static/thumbnails/78b18e1c-1442-46ee-a64b-af8ab3008aa5.jpg" />
-                <img class="banner-image" src="https://stream.dleu.net/lazy-static/thumbnails/78b18e1c-1442-46ee-a64b-af8ab3008aa5.jpg" alt="大连市中小学心理健康教育资源库" />
+                <source media="(max-width: 620px)" srcset="{{ mobileImage }}" />
+                <img class="banner-image" src="{{ image }}" alt="{{ title }}" loading="lazy" decoding="async" />
             </picture>
+            {{#else}}
+            <img class="banner-image" src="{{ image }}" alt="{{ title }}" loading="lazy" decoding="async" />
+            {{/if}}
+            {{#if showText}}
+            {{#if title}}
             <span class="banner-caption">
-                <strong class="banner-title">{{ site.siteTitle }}</strong>
-                <span class="banner-subtitle">{{ site.siteDescription }}</span>
+                <strong class="banner-title">{{ title }}</strong>
+                {{#if subtitle}}<span class="banner-subtitle">{{ subtitle }}</span>{{/if}}
             </span>
-        </div>
-
-        <!-- 形态②：叠加文字（无手机图），整块可点 -->
-        <a class="banner-slide" href="/post/tishengyili-jujuetuoyan" aria-hidden="true">
-            <img class="banner-image" src="https://stream.dleu.net/lazy-static/thumbnails/3e9674f1-de91-4702-b497-05c15c245cb7.jpg" alt="提升毅力 拒绝拖延" />
-            <span class="banner-caption">
-                <strong class="banner-title">提升毅力 拒绝拖延</strong>
-                <span class="banner-subtitle">高中 · 心理微课 · 7:39</span>
-            </span>
+            {{/if}}
+            {{/if}}
         </a>
-
-        <!-- 形态③：纯图广告（文字做在图里）—— 后台把「叠加文字」关掉就是这个形态 -->
-        <a class="banner-slide is-image-only" href="/post/anwei-fangchengshi" aria-hidden="true">
-            <img class="banner-image" src="https://stream.dleu.net/lazy-static/thumbnails/ff592bc6-6234-405c-af52-32a6c24361ab.jpg" alt="安慰方程式-做一枚治愈系朋友" />
-        </a>
+        {{/each}}
     </div>
 
+    {{#if homepage.hasMultipleBanners}}
     <button type="button" class="banner-nav is-prev" aria-label="上一张">‹</button>
     <button type="button" class="banner-nav is-next" aria-label="下一张">›</button>
-
     <div class="banner-dots" role="tablist" aria-label="选择轮播图">
-        <button type="button" class="banner-dot is-active" aria-label="第 1 张"></button>
-        <button type="button" class="banner-dot" aria-label="第 2 张"></button>
-        <button type="button" class="banner-dot" aria-label="第 3 张"></button>
+        {{#each homepage.banners}}
+        <button type="button" class="banner-dot" aria-label="选择这张轮播图"></button>
+        {{/each}}
     </div>
+    {{/if}}
 </section>
+{{/if}}

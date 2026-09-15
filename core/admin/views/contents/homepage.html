@@ -1,0 +1,72 @@
+<div class="dashboard homepage-dashboard">
+    <div class="homepage-header">
+        <h1 data-i18n="nav_homepage">首页装修</h1>
+        <div class="homepage-actions">
+            <span class="homepage-status" id="homepageStatus"></span>
+            <a class="btn-secondary" href="/" target="_blank" rel="noopener">预览前台首页 ↗</a>
+            <button type="button" class="btn-primary" id="homepageSave" data-i18n="hp_save">保存</button>
+        </div>
+    </div>
+
+    <p class="homepage-note">
+        这里维护首页的<strong>广告位轮播</strong>与<strong>资源分类卡片</strong>（都只影响首页，与文章内容无关）。
+        保存后前台首页立刻生效，不需要重启。<code id="homepageFile"></code>
+    </p>
+
+    <div class="info-card">
+        <h2>① 广告位轮播</h2>
+        <p class="hint">
+            出图规格：桌面 <strong>1600 × 320</strong>（5:1）；手机图可选 <strong>750 × 320</strong>，不填则手机端用桌面图居中裁切
+            —— 所以关键内容请放在图片<strong>中间 60% 宽以内</strong>。
+            文字若已做进图片，请关掉「叠加文字」。
+        </p>
+        <div id="bannerList" class="hp-list"></div>
+        <button type="button" class="btn-secondary" id="bannerAdd" data-i18n="hp_addBanner">+ 新增一条广告</button>
+    </div>
+
+    <div class="info-card">
+        <h2>② 轮播设置</h2>
+        <div class="hp-settings">
+            <label class="hp-field-inline">
+                <input type="checkbox" id="setAutoplay" />
+                <span>自动播放</span>
+            </label>
+            <label class="hp-field-inline">
+                <span>切换间隔（秒）</span>
+                <input type="number" id="setInterval" min="2" max="30" step="1" />
+            </label>
+            <label class="hp-field-inline">
+                <span>广告位高度（px）</span>
+                <input type="number" id="setHeight" min="140" max="320" step="5" />
+                <span class="hint">线上 hero 约 201px；140–320 之间</span>
+            </label>
+        </div>
+    </div>
+
+    <div class="info-card">
+        <h2>③ 资源分类卡片</h2>
+        <p class="hint">
+            分类清单<strong>自动来自文章</strong>（按 <code>category</code> 字段聚合，括号里是篇数）。
+            <strong>新分类默认不上首页</strong>：配好图后勾选「上线」才会出现。
+            卡片顺序 = 首页显示顺序，用「上移 / 下移」调整。
+        </p>
+        <div id="categoryList" class="hp-list"></div>
+        <p class="hint" id="categorySummary"></p>
+    </div>
+
+    <!-- 媒体选择面板（由 JS 填充：上传 / 从媒体库选） -->
+    <div class="hp-picker" id="hpPicker" hidden>
+        <div class="hp-picker-head">
+            <strong id="hpPickerTitle">选择图片</strong>
+            <button type="button" class="btn-secondary" id="hpPickerClose">关闭</button>
+        </div>
+        <div class="hp-picker-tools">
+            <label class="btn-secondary">
+                上传新图片
+                <input type="file" id="hpPickerUpload" accept="image/*" hidden />
+            </label>
+            <span class="hint" id="hpPickerHint">建议先按规格裁好再上传；上传后自动选用。</span>
+        </div>
+        <div class="hp-picker-grid" id="hpPickerGrid"></div>
+    </div>
+</div>

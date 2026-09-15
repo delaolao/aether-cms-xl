@@ -44,6 +44,8 @@ document.addEventListener("DOMContentLoaded", function () {
     if (slides.length < 2) return
 
     const interval = parseInt(root.getAttribute("data-interval") || "5000", 10)
+    // 后台「自动播放」开关：data-autoplay="0" 时只响应圆点/箭头，不自动切换
+    const autoplayAllowed = root.getAttribute("data-autoplay") !== "0"
     const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
     let index = 0
     let timer = null
@@ -68,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function start() {
         stop()
-        if (reduceMotion) return
+        if (reduceMotion || !autoplayAllowed) return
         timer = setInterval(function () {
             show(index + 1)
         }, interval)
