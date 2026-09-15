@@ -86,3 +86,6 @@ node tools/instance-fingerprint.mjs --compare xl.fingerprint.txt --against xl-re
 - `MISSING_IN_INSTANCE` = 仓库比实例新，或该文件从未部署到这台
 
 注意：本地工作副本是 CRLF、服务器是 LF，**直接比 sha256 会得到「每个文件都不同」**；该工具已做行尾归一化。
+
+排除范围：
+ode_modules、.git、缓存与归档目录一律跳过；content/data（users.json 等实例数据）与 content/uploads（图片附件）不参与比对；**content/themes/** 参与比对** —— 本仓的主题定制正是最需要被发现的差异。
