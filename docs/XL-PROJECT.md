@@ -89,3 +89,25 @@ node tools/instance-fingerprint.mjs --compare xl.fingerprint.txt --against xl-re
 
 排除范围：
 ode_modules、.git、缓存与归档目录一律跳过；content/data（users.json 等实例数据）与 content/uploads（图片附件）不参与比对；**content/themes/** 参与比对** —— 本仓的主题定制正是最需要被发现的差异。
+
+## 实例资产（不入库，但要留来源）
+
+首次全量核对（2026-09-15）发现 xl 上除本仓跟踪的两个主题外，还有 5 个从后台主题市场安装的主题，共 176 个文件。它们是**实例资产**，按 `.gitignore` 设计不入库（含二进制字体、体积大），此处记录来源以便重建：
+
+| 主题 | 版本 | 作者 |
+|---|---|---|
+| `clean_blog` | 1.0.2 | LebCit |
+| `editorial` | 1.0.0 | LebCit |
+| `midday` | 1.1.0 | LebCit |
+| `old_writer` | 1.0.1 | LebCit |
+| `pure` | 1.0.3 | LebCit |
+
+xl 当前实际使用 `ember`（本仓跟踪）。这些第三方主题若被就地改过，需要单独决定是否入库；未改动的按「市场可重装」处理。
+
+同样不入库的还有：`content/data/tag-aliases.json`（实例配置，建议单独备份一份）、`content/uploads/**`（媒体文件）。
+
+## 首次核对结论（2026-09-15）
+
+- `MISSING_IN_REPO` 177 → 拆分后为 1 个 `.env`（**不该回收**，工具已修成自动排除）+ 176 个第三方主题文件（上节）
+- `DIFFERS` 3 → `content/themes/default/partials/footer.html` 真差异（线上 xl / xq 多一层无 CSS 支撑的 `footer-row` 包裹，**已回收入库**）；`screenshot.avif` 伪差异（归一化实现不一致，**工具已修**）；`.gitignore` 为服务器上的旧副本（服务器不是 git 检出，无作用）
+- `MISSING_IN_INSTANCE` 11 → 仓库更新尚未部署到 xl（`docs/**`、`TAG-GOVERNANCE.md`、`tools/*.ps1` 等），属正常
