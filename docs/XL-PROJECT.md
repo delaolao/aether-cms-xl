@@ -48,7 +48,16 @@ mkdir -p content/data content/uploads
 .\tools\sync-today-to-server.ps1        # 默认实例=仅 xl（可用 -Instances 覆盖）
 ```
 
-同步后**必须重启 node 进程**：模板与 `/assets`、`/core/admin/static` 有服务端内存缓存。
+同步后是否重启，取决于**改了什么**（2026-09-15 实测）：
+
+| 改动类型 | 是否要重启 | 原因 |
+|---|---|---|
+| 模板 / partial（`content/themes/**/*.html`） | **不用** | 每次请求都重新读盘；实测改完刷新即生效 |
+| 静态资源（`/assets/**`、`content/themes/**/assets/**`、`core/admin/static/**`） | **不用** | 由静态文件服务直接读盘；**但浏览器可能缓存旧版**，看不到变化时先硬刷新（Ctrl+F5） |
+| 服务端 JS（`core/**`、`index.js`） | **要** | Node 的 ESM 模块缓存，进程内不会重新加载 |
+| `.env` | **要** | 启动时读取 |
+
+> 早期文档里写的"模板与静态资源有服务端内存缓存、必须重启"是**错的**，多半是把浏览器缓存误判成了服务端缓存。模板改动其实只需同步 + 刷新。
 
 ```bash
 tmux send-keys -t 10 C-c; sleep 2; tmux send-keys -t 10 'npm start' Enter
