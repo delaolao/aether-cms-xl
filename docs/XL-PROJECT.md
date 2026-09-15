@@ -87,8 +87,7 @@ node tools/instance-fingerprint.mjs --compare xl.fingerprint.txt --against xl-re
 
 注意：本地工作副本是 CRLF、服务器是 LF，**直接比 sha256 会得到「每个文件都不同」**；该工具已做行尾归一化。
 
-排除范围：
-ode_modules、.git、缓存与归档目录一律跳过；content/data（users.json 等实例数据）与 content/uploads（图片附件）不参与比对；**content/themes/** 参与比对** —— 本仓的主题定制正是最需要被发现的差异。
+排除范围：`node_modules`、`.git`、缓存与归档目录一律跳过；`content/data`（users.json 等实例数据）与 `content/uploads`（图片附件）不参与比对；**`content/themes/**` 参与比对** —— 本仓的主题定制正是最需要被发现的差异。`.env` 与工具自己的 `*.fingerprint.txt` 也排除（前者绝不入库，后者避免自我污染）。大清单按目录折叠，加 `--verbose` 展开。
 
 ## 实例资产（不入库，但要留来源）
 
