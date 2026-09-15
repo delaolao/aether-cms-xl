@@ -1,0 +1,75 @@
+<!-- ============================================================
+     首页分类卡片区（图片 + 文字，数量动态）
+     Phase 1 占位数据：写死 6 张卡片，其中
+       · 心理微课（13 篇）、技术（1 篇）= 你线上**真实**的分类与篇数
+       · 家庭教育 / 危机干预 / 教师成长 / 青春期教育 = 示例名（角标「示例」）
+     只为让你看多行排版。Phase 2 接后台后：分类从文章自动聚合，
+     只渲染后台勾选「上线」的分类，并按后台排序显示。
+     点击目标：/category/<分类名>（现有分类页，已支持分类×学段交叉筛选）
+     ============================================================ -->
+<div class="cat-grid">
+    <a class="cat-card" href="/category/心理微课">
+        <span class="cat-card-media">
+            <img src="https://stream.dleu.net/lazy-static/thumbnails/49048d10-5b7c-42f7-94bb-5f5fa591fa43.jpg" alt="心理微课" loading="lazy" decoding="async" />
+        </span>
+        <span class="cat-card-body">
+            <strong class="cat-card-title">心理微课</strong>
+            <span class="cat-card-count">13 篇资源</span>
+            <span class="cat-card-desc">面向中小学的心理健康微课，按学段整理。</span>
+        </span>
+    </a>
+    <a class="cat-card" href="/category/技术">
+        <span class="cat-card-media">
+            <img src="https://stream.dleu.net/lazy-static/thumbnails/2d57963c-510c-462c-ae76-8805e7aad9fe.jpg" alt="技术" loading="lazy" decoding="async" />
+        </span>
+        <span class="cat-card-body">
+            <strong class="cat-card-title">技术</strong>
+            <span class="cat-card-count">1 篇资源</span>
+            <span class="cat-card-desc">站点与内容相关的技术说明。</span>
+        </span>
+    </a>
+    <a class="cat-card is-sample" href="/category/家庭教育">
+        <span class="cat-card-media">
+            <img src="https://stream.dleu.net/lazy-static/thumbnails/ba75f221-f8b1-4eec-978d-d59079a98a57.jpg" alt="家庭教育" loading="lazy" decoding="async" />
+            <span class="cat-card-flag">示例</span>
+        </span>
+        <span class="cat-card-body">
+            <strong class="cat-card-title">家庭教育</strong>
+            <span class="cat-card-count">示例卡片</span>
+            <span class="cat-card-desc">示例：说明文字由后台填写，留空则不显示。</span>
+        </span>
+    </a>
+    <a class="cat-card is-sample" href="/category/危机干预">
+        <span class="cat-card-media">
+            <img src="https://stream.dleu.net/lazy-static/thumbnails/78b18e1c-1442-46ee-a64b-af8ab3008aa5.jpg" alt="危机干预" loading="lazy" decoding="async" />
+            <span class="cat-card-flag">示例</span>
+        </span>
+        <span class="cat-card-body">
+            <strong class="cat-card-title">危机干预</strong>
+            <span class="cat-card-count">示例卡片</span>
+            <span class="cat-card-desc">示例：图片由后台从媒体库选择。</span>
+        </span>
+    </a>
+    <a class="cat-card is-sample" href="/category/教师成长">
+        <span class="cat-card-media">
+            <img src="https://stream.dleu.net/lazy-static/thumbnails/3e9674f1-de91-4702-b497-05c15c245cb7.jpg" alt="教师成长" loading="lazy" decoding="async" />
+            <span class="cat-card-flag">示例</span>
+        </span>
+        <span class="cat-card-body">
+            <strong class="cat-card-title">教师成长</strong>
+            <span class="cat-card-count">示例卡片</span>
+            <span class="cat-card-desc">示例：排序可在后台拖拽调整。</span>
+        </span>
+    </a>
+    <a class="cat-card is-sample" href="/category/青春期教育">
+        <span class="cat-card-media">
+            <img src="https://stream.dleu.net/lazy-static/thumbnails/ff592bc6-6234-405c-af52-32a6c24361ab.jpg" alt="青春期教育" loading="lazy" decoding="async" />
+            <span class="cat-card-flag">示例</span>
+        </span>
+        <span class="cat-card-body">
+            <strong class="cat-card-title">青春期教育</strong>
+            <span class="cat-card-count">示例卡片</span>
+            <span class="cat-card-desc">示例：默认不上首页，后台勾选「上线」后才显示。</span>
+        </span>
+    </a>
+</div>

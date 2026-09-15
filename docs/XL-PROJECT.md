@@ -119,3 +119,27 @@ xl 当前实际使用 `ember`（本仓跟踪）。这些第三方主题若被就
 - `MISSING_IN_REPO` 177 → 拆分后为 1 个 `.env`（**不该回收**，工具已修成自动排除）+ 176 个第三方主题文件（上节）
 - `DIFFERS` 3 → `content/themes/default/partials/footer.html` 真差异（线上 xl / xq 多一层无 CSS 支撑的 `footer-row` 包裹，**已回收入库**）；`screenshot.avif` 伪差异（归一化实现不一致，**工具已修**）；`.gitignore` 为服务器上的旧副本（服务器不是 git 检出，无作用）
 - `MISSING_IN_INSTANCE` 11 → 仓库更新尚未部署到 xl（`docs/**`、`TAG-GOVERNANCE.md`、`tools/*.ps1` 等），属正常
+
+## 本地预览（改模板用）
+
+```powershell
+cd D:\teacherGeng\AetherCMS\aether-cms-xl
+node index.js            # 端口读 .env 里的 PORT=8096
+```
+
+浏览器打开 `http://localhost:8096`。要点：
+
+- 运行时复用引擎仓的 `node_modules`（两边 `package.json` 相同，省一次联网安装）
+- `.env`、`content/data`、`content/uploads` 都不入库；预览内容与线上无关，可只拉 `posts / pages / settings.json / menu.json`
+- 预览后台账号是首次启动自动创建的 `admin / admin`（仅本地）
+- **改模板不用重启**：模板/partial/静态资源每次请求都重新读盘，改完刷新即可；只有 `core/**` 与 `.env` 需要重启
+
+### STE 模板引擎的三个坑（实测，2026-09-15）
+
+| 坑 | 现象 | 规避 |
+|---|---|---|
+| **HTML 注释里的 mustache 会被执行** | 注释里写了未配对的循环指令 → **整页 500**（`Unterminated each loop`） | 注释里不要写 mustache；必须写就写完整配对 |
+| **不支持下标访问** | `{{posts.0.title}}`、`{{posts.[0].title}}` → **500**（`Expect property name after '.'`） | 需要"第 N 项"必须由后端准备好数据，模板里挑不出来 |
+| 模板改动无需重启 | 改完刷新即生效 | 见上；重启只针对 `core/**`、`.env` |
+
+> 模板报错会让整页 500（不是空白降级），所以改模板后要立即请求一次确认，别等部署。

@@ -8,6 +8,17 @@
             {{/if}}
             <a class="brand-title" href="/">{{ site.siteTitle }}</a>
         </div>
-        {{html_menu}}
+
+        <!-- 前台导航白名单（2026-09-15 需求）：只保留这 4 项。
+             改导航请改这里；后台「设置 → 菜单」的内容不再影响前台导航。
+             /notes/graph 与 /tag-cloud 由 core 路由提供，title 可自行调整中文名。 -->
+        <nav class="site-navigation">
+            <ul class="nav-menu">
+                <li class="menu-item"><a href="/">首页</a></li>
+                <li class="menu-item"><a href="/notes/graph">图谱</a></li>
+                <li class="menu-item"><a href="/tag-cloud">标签云</a></li>
+                <li class="menu-item"><a href="/search">站内搜索</a></li>
+            </ul>
+        </nav>
     </div>
 </header>
