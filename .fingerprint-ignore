@@ -1,0 +1,33 @@
+# instance-fingerprint 忽略清单
+#
+# 这里列的是「按设计就不会两边一致」的路径，用于让例行核对**真正归零**：
+# 归零之后，任何新冒出来的差异都值得看一眼，而不是被十几个"设计如此"的条目淹没。
+# 一行一个路径；以 / 结尾表示整个目录；# 开头是注释。
+# 用法见 docs/XL-PROJECT.md「核对实例与仓库的差异」。
+
+# —— 只在本机运行的运维脚本 ——
+# 这三个脚本都是从本机 ssh/scp 出去操作服务器的（不是部署到服务器上运行的），
+# 所以它们不该出现在实例里，报成"仓库有、实例没有"是正常的。
+tools/sync-today-to-server.ps1
+tools/backup-content.ps1
+tools/rotate-security.ps1
+
+# —— 纯文档 ——
+# 服务器只需要能跑起来，不需要这些记录；需要时在仓库里看即可。
+TAG-GOVERNANCE.md
+DEPLOYMENT-AI-TAGS.md
+docs/
+
+# —— 服务器上的 .gitignore 是历史遗留副本 ——
+# 服务器不是 git 检出，这个文件在那里不起作用，内容停留在旧版本。
+.gitignore
+
+# —— 实例资产：从主题市场安装的第三方主题 ——
+# 按 .gitignore 设计不入库（含二进制字体、体积大），来源与版本记录在
+# docs/XL-PROJECT.md「实例资产」一节，可随时从主题市场重装。
+# xl 实际使用的是 ember（本仓跟踪，**不在**忽略之列，改动会被核对发现）。
+content/themes/clean_blog/
+content/themes/editorial/
+content/themes/midday/
+content/themes/old_writer/
+content/themes/pure/
