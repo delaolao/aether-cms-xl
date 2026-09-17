@@ -1,9 +1,9 @@
 /**
  * Share bar runtime.
  *
- * Behaviour: copy link (with clipboard fallback), WeChat / WeCom QR popovers,
- * print/save-as-PDF. QQ & QZone are plain links rendered on the server, so they
- * need no JavaScript at all.
+ * Behaviour: copy link (with clipboard fallback), WeChat / WeCom QR popovers.
+ * QQ & QZone are plain links rendered on the server, so they need no JavaScript
+ * at all. （2026-09-15：按使用方要求移除打印/PDF 按钮与其处理逻辑。）
  */
 ;(function () {
     "use strict"
@@ -82,11 +82,6 @@
                     pop.hidden = !willOpen
                     button.setAttribute("aria-expanded", String(willOpen))
                     return
-                }
-
-                if (action === "print") {
-                    event.preventDefault()
-                    window.print()
                 }
             })
 

@@ -3,7 +3,11 @@
  *
  * Targets are chosen for domestic networks (no Twitter/X/Facebook): copy link,
  * WeChat / WeCom QR (WeChat cannot be shared by URL, so we show a QR + copy
- * hint), QQ and QZone share URLs, and print/save-as-PDF.
+ * hint), QQ and QZone share URLs.
+ *
+ * 2026-09-15：按使用方要求去掉「打印/PDF」按钮（需求方不需要这个选项）。
+ * 浏览器的 Ctrl+P 仍可打印，assets/aether-extras.css 里的 @media print
+ * 规则保留，打印出来的版面依然干净。
  *
  * The QR codes are generated HERE (server side, `qrcode` → inline SVG), so the
  * page needs no extra request, no third-party script and works offline.
@@ -107,7 +111,6 @@ export function buildShareBar({ url, title, description = "", videos = [] } = {}
   </span>
   <a class="share-btn share-link" href="${escapeAttr(qzone)}" target="_blank" rel="noopener" title="分享到 QQ 空间">⭐ QQ空间</a>
   <a class="share-btn share-link" href="${escapeAttr(qq)}" target="_blank" rel="noopener" title="分享给 QQ 好友">🐧 QQ</a>
-  <button class="share-btn" type="button" data-share="print" title="打印或另存为 PDF">🖨️ 打印/PDF</button>
   ${videoLink}
   <span class="share-toast" role="status" aria-live="polite"></span>
 </section>`
