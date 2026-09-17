@@ -531,6 +531,14 @@ export class ContentService {
                     contentData.metadata.category = data.data.category
                 }
 
+                // 学段（stage）必须一并读回！
+                // 曾经漏了这一行，症状是：填好学段 → 保存草稿（保存后会重新加载内容）→
+                // 输入框被清空 → 再发布时服务端收到空值，把 frontmatter 里的 stage 删掉，
+                // 表现为「学段信息丢失」。（保存路径本来就有 stage，只有加载路径漏了。）
+                if (data.data.stage) {
+                    contentData.metadata.stage = data.data.stage
+                }
+
                 // Explicitly copy the featured image if present
                 if (data.data.featuredImage) {
                     contentData.metadata.featuredImage = data.data.featuredImage

@@ -174,7 +174,10 @@
 
                 <div class="form-group">
                     <label for="slug" data-i18n="editor_slug">Slug</label>
-                    <input type="text" id="slug" name="slug" value="{{ item.slug }}" placeholder="post-url-slug" />
+                    <div class="slug-input-wrapper">
+                        <input type="text" id="slug" name="slug" value="{{ item.slug }}" placeholder="post-url-slug" />
+                        <button type="button" id="generateSlug" class="btn btn-sm" data-i18n="editor_generateSlug" title="用标题的汉语拼音重新生成别名（会改变文章链接）">拼音生成</button>
+                    </div>
                     <p class="help-text" data-i18n="editor_slugHelp">The URL-friendly version of the title.</p>
                 </div>
 
@@ -309,10 +312,14 @@
                 {{#if contentType === "post"}}
                 <!-- Categories Field -->
                 <div class="form-group">
-                    <label for="category" data-i18n="editor_category">Category</label>
+                    <label for="categorySelect" data-i18n="editor_category">Category</label>
                     <div class="category-container">
+                        <!-- 已有分类下拉：避免手打错字（数据来自 GET /api/categories） -->
+                        <select id="categorySelect" class="pick-select">
+                            <option value="" data-i18n="editor_pickCategory">选择已有分类…</option>
+                        </select>
                         <div class="category-input-wrapper">
-                            <input type="text" id="categoryInput" data-i18n-placeholder="editor_addCategory" placeholder="Add a category..." />
+                            <input type="text" id="categoryInput" data-i18n-placeholder="editor_addCategory" placeholder="输入新分类…" />
                             <button type="button" id="addCategory" class="btn btn-sm" data-i18n="editor_add">Add</button>
                         </div>
                         <div id="categoriesList" class="categories-list">
@@ -324,10 +331,19 @@
 
                 <!-- Stage Field（学段：单值维度，避免与标签混在一起） -->
                 <div class="form-group">
-                    <label for="stageInput" data-i18n="editor_stage">Stage</label>
-                    <input type="text" id="stageInput" list="stageSuggestions" data-i18n-placeholder="editor_stagePlaceholder" placeholder="如：小学 / 初中 / 高中" />
-                    <datalist id="stageSuggestions"></datalist>
-                    <p class="help-text" data-i18n="editor_stageHelp">学段是独立维度（不属于标签），用于「按学段浏览」筛选；留空表示不指定。</p>
+                    <label for="stageSelect" data-i18n="editor_stage">Stage</label>
+                    <div class="stage-container">
+                        <!-- 已有学段下拉（数据来自 GET /api/stages）；选「（未设置）」即为留空 -->
+                        <select id="stageSelect" class="pick-select">
+                            <option value="" data-i18n="editor_stageEmpty">（未设置）</option>
+                        </select>
+                        <div class="stage-input-wrapper">
+                            <input type="text" id="stageInput" list="stageSuggestions" data-i18n-placeholder="editor_stagePlaceholder" placeholder="或输入新学段，如：小学" />
+                            <button type="button" id="addStage" class="btn btn-sm" data-i18n="editor_add">Add</button>
+                        </div>
+                        <datalist id="stageSuggestions"></datalist>
+                        <p class="help-text" data-i18n="editor_stageHelp">学段是独立维度（不属于标签），用于「按学段浏览」筛选；留空表示不指定。</p>
+                    </div>
                 </div>
 
                 <!-- Tags Field -->

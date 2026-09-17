@@ -60,7 +60,7 @@
             nav_maintenance: "系统维护",
             nav_homepage: "首页装修",
 
-            // homepage decoration
+            // homepage decoration（首页装修页）
             hp_save: "保存",
             hp_addBanner: "+ 新增一条广告",
 
@@ -440,6 +440,12 @@
             editor_stage: "学段",
             editor_stagePlaceholder: "如：小学 / 初中 / 高中",
             editor_stageHelp: "学段是独立维度（不属于标签），用于「按学段浏览」筛选；留空表示不指定。",
+            editor_stageEmpty: "（未设置）",
+            editor_pickCategory: "选择已有分类…",
+            editor_generateSlug: "拼音生成",
+            editor_slugNeedTitle: "请先填写标题",
+            editor_slugConfirm: "重新生成会改变文章链接（旧链接将失效），确定继续？",
+            editor_slugFailed: "拼音生成失败，请手动填写",
             editor_recommendTags: "✨ 推荐标签",
             editor_addTag: "添加标签…",
             editor_addTagHelp: "添加多个标签以帮助用户找到相关内容。",
@@ -877,6 +883,12 @@
             editor_stage: "Stage",
             editor_stagePlaceholder: "e.g. Primary / Middle / High school",
             editor_stageHelp: "Stage is its own dimension (not a tag) and powers the “browse by stage” filter. Leave empty for none.",
+            editor_stageEmpty: "(not set)",
+            editor_pickCategory: "Pick an existing category…",
+            editor_generateSlug: "Generate from title",
+            editor_slugNeedTitle: "Please fill in the title first",
+            editor_slugConfirm: "Regenerating changes the article URL (old links break). Continue?",
+            editor_slugFailed: "Pinyin generation failed — please fill the slug manually",
             editor_recommendTags: "✨ Recommend tags",
             editor_addTag: "Add a tag...",
             editor_addTagHelp: "Add multiple tags to help users find related content.",

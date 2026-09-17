@@ -4,6 +4,7 @@
 import { join } from "node:path"
 import { ensureDirectory, findMarkdownFileByProperty, writeMarkdownFile, deleteFile } from "../utils/file-utils.js"
 import { slugify, normalizeTagList, normalizeStageName } from "../utils/content-utils.js"
+import { slugFromTitle } from "../../pinyin.js"
 import { serializeFrontmatter } from "../utils/yaml-utils.js"
 
 export class ContentItemManager {
@@ -65,7 +66,12 @@ export class ContentItemManager {
             // Get metadata
             const metadata = contentData.metadata || contentData
 
-            const slug = metadata.slug || slugify(metadata.title || defaultSlug)
+            // 别名（slug）：显式给了就用；没给则**优先生成拼音**（中文标题 → tishengyili），
+            // 拼音生成不出东西（纯标点/空标题）时退回旧的 slugify 行为。
+            const slug =
+                metadata.slug ||
+                slugFromTitle(metadata.title || "") ||
+                slugify(metadata.title || defaultSlug)
 
             // Create frontmatter
             const frontmatter = {
@@ -230,9 +236,9 @@ export class ContentItemManager {
             // Use updated content field if provided or keep original
             const content = contentData.content !== undefined ? contentData.content : originalContent.content
 
-            // Regenerate slug if title changed and slug wasn't explicitly provided
+            // 标题改了、且没显式给别名时重新生成（同样优先拼音）
             if (metadata.title && !metadata.slug && metadata.title !== originalContent.frontmatter.title) {
-                updatedFrontmatter.slug = slugify(metadata.title)
+                updatedFrontmatter.slug = slugFromTitle(metadata.title) || slugify(metadata.title)
             }
 
             // Check if page type changed (custom <-> normal)

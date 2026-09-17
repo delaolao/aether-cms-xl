@@ -1312,3 +1312,49 @@ input[type="datetime-local"] {
     border-radius: 8px;
     margin-left: 8px;
 }
+
+/* ============================================================
+   侧边栏：拼音别名生成按钮 + 已有分类/学段下拉（2026-09-15）
+   ============================================================ */
+.slug-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.slug-input-wrapper input {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* 已有值下拉：与输入框同高、同宽，风格一致 */
+.pick-select {
+    display: block;
+    width: 100%;
+    padding: 0.45rem 0.6rem;
+    margin-bottom: 0.4rem;
+    font-size: 0.9rem;
+    color: inherit;
+    background: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    box-sizing: border-box;
+}
+
+/* 分类 / 学段：下拉 + 输入框 + 添加按钮 */
+.category-container,
+.stage-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+.category-input-wrapper,
+.stage-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.category-input-wrapper input,
+.stage-input-wrapper input {
+    flex: 1 1 auto;
+    min-width: 0;
+}

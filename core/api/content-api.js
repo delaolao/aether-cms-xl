@@ -55,10 +55,26 @@ export function setupContentApi(app, systems) {
         }
     })
 
-    // Category list with counts. Public like /api/tags and /api/stages: the admin
-    // 「首页装修」页 needs it to build category cards, and the frontend may use it
-    // for category navigation. Categories are not entities of their own — they are
-    // aggregated from the `category` field of published posts.
+    // 由标题生成别名（拼音）—— 编辑器在标题输入时调用，避免手敲拼音。
+    //   GET /api/slug?text=提升毅力 拒绝拖延[&mode=word|syllable]
+    // 用 vendor 的 tiny-pinyin（见 core/lib/pinyin.js），不在浏览器端跑，后台无需额外 JS 体积。
+    app.get("/api/slug", authenticate, async (req, res) => {
+        try {
+            const { slugFromTitle, pinyinAvailable } = await import("../lib/pinyin.js")
+            if (!pinyinAvailable()) {
+                return res.status(503).json({ success: false, error: "拼音库不可用（core/lib/vendor/tiny-pinyin 缺失）" })
+            }
+            const text = String(req.queryParams?.get("text") || "")
+            const mode = String(req.queryParams?.get("mode") || "word")
+            res.json({ success: true, slug: slugFromTitle(text, { mode }) })
+        } catch (error) {
+            console.error("Slug generation error:", error)
+            res.status(500).json({ success: false, error: error.message })
+        }
+    })
+
+    // Category list with counts (公开：首页分类卡、后台分类下拉、编辑器分类下拉都用它).
+    // 分类不是实体，只是文章 frontmatter 里的字段，所以只能聚合出来。
     app.get("/api/categories", async (req, res) => {
         try {
             const { collectCategoryCounts } = await import("../utils/category-utils.js")

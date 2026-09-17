@@ -54,13 +54,23 @@ export class EditorEnhancements {
         this.categoryInput = document.getElementById("categoryInput")
         this.categoriesList = document.getElementById("categoriesList")
         this.addCategoryBtn = document.getElementById("addCategory")
+        this.categorySelect = document.getElementById("categorySelect")
+        this.existingCategories = []
 
         this.publishDateInput = document.getElementById("publishDate")
 
         // 学段（stage）：单值维度，独立于标签
         this.stageInput = document.getElementById("stageInput")
         this.stageSuggestionsList = document.getElementById("stageSuggestions")
+        this.stageSelect = document.getElementById("stageSelect")
+        this.addStageBtn = document.getElementById("addStage")
         this.existingStages = []
+        // 用户是否已经动过学段输入框（动过就不再被"加载数据"覆盖，避免填了又被冲掉）
+        this.stageTouched = false
+
+        // 拼音别名生成
+        this.generateSlugBtn = document.getElementById("generateSlug")
+        this.slugCache = new Map()
 
         // Existing-tag suggestions (see loadTagSuggestions)
         this.tagSuggestionsList = document.getElementById("tagSuggestions")
@@ -106,6 +116,9 @@ export class EditorEnhancements {
         // Load the stages the site already uses (学段是独立维度)
         this.loadStageSuggestions()
 
+        // 已有分类下拉（避免手打分类造成近重复）
+        this.loadCategorySuggestions()
+
         // Listen for content loaded event to ensure we get the data
         document.addEventListener("editor:contentLoaded", (event) => {
             // Load categories and tags from the loaded content
@@ -139,7 +152,7 @@ export class EditorEnhancements {
         this.renderTagSuggestions()
     }
 
-    /** Load the stages already used on the site (GET /api/stages) into a datalist. */
+    /** Load the stages already used on the site (GET /api/stages) into a datalist + the dropdown. */
     async loadStageSuggestions() {
         try {
             const res = await fetch("/api/stages", { credentials: "same-origin" })
@@ -152,14 +165,77 @@ export class EditorEnhancements {
         } catch (error) {
             this.existingStages = []
         }
-        if (!this.stageSuggestionsList) return
-        this.stageSuggestionsList.innerHTML = ""
+        if (this.stageSuggestionsList) {
+            this.stageSuggestionsList.innerHTML = ""
+            for (const stage of this.existingStages) {
+                const option = document.createElement("option")
+                option.value = stage.name
+                option.label = `${stage.count} 篇`
+                this.stageSuggestionsList.appendChild(option)
+            }
+        }
+        this.renderStageSelect()
+    }
+
+    /** 已有学段下拉：第一项是「（未设置）」，其余按篇数排序，带篇数提示。 */
+    renderStageSelect() {
+        if (!this.stageSelect) return
+        const current = this.stageInput ? normalizeTagName(this.stageInput.value) : ""
+        // 保留第一项（空值 = 未设置），其余重建
+        while (this.stageSelect.options.length > 1) this.stageSelect.remove(1)
         for (const stage of this.existingStages) {
             const option = document.createElement("option")
             option.value = stage.name
-            option.label = `${stage.count} 篇`
-            this.stageSuggestionsList.appendChild(option)
+            option.textContent = `${stage.name}（${stage.count}）`
+            this.stageSelect.appendChild(option)
         }
+        // 当前值不在列表里（新建的学段）：补一项，保证下拉能反映当前状态
+        if (current && !this.existingStages.some((stage) => stage.name === current)) {
+            const option = document.createElement("option")
+            option.value = current
+            option.textContent = current
+            this.stageSelect.appendChild(option)
+        }
+        this.stageSelect.value = current
+    }
+
+    /**
+     * 已有分类下拉（GET /api/categories）。
+     * 分类不是独立实体、只是文章里的字段，所以这里只能聚合出来 —— 之前没有这个接口，
+     * 编辑器只能用输入框手打，容易写出「心理微课 / 心理 微课」这种近重复分类。
+     */
+    async loadCategorySuggestions() {
+        if (!this.categorySelect) return
+        try {
+            const res = await fetch("/api/categories", { credentials: "same-origin" })
+            if (!res.ok) throw new Error(`HTTP ${res.status}`)
+            const json = await res.json()
+            const categories = Array.isArray(json.categories) ? json.categories : []
+            this.existingCategories = categories
+                .filter((item) => item && item.name)
+                .map((item) => ({ name: String(item.name), count: Number(item.count) || 0 }))
+        } catch {
+            this.existingCategories = []
+        }
+        this.renderCategorySelect()
+    }
+
+    renderCategorySelect() {
+        if (!this.categorySelect) return
+        const current = this.categories.length ? this.categories[0] : ""
+        while (this.categorySelect.options.length > 1) this.categorySelect.remove(1)
+        const seen = new Set()
+        const push = (name, count) => {
+            if (!name || seen.has(name)) return
+            seen.add(name)
+            const option = document.createElement("option")
+            option.value = name
+            option.textContent = count === undefined ? name : `${name}（${count}）`
+            this.categorySelect.appendChild(option)
+        }
+        for (const item of this.existingCategories || []) push(item.name, item.count)
+        push(current) // 当前分类若不在聚合结果里（比如刚建的），也补进下拉
+        this.categorySelect.value = ""
     }
 
     /** Render the datalist + the reusable-tag chips. */
@@ -269,6 +345,111 @@ export class EditorEnhancements {
                     this.addCategory()
                 }
             })
+        }
+
+        // 已有分类下拉：选中即设为当前分类（避免手打错字）
+        if (this.categorySelect) {
+            this.categorySelect.addEventListener("change", () => {
+                const value = this.categorySelect.value
+                if (!value) return
+                this.categories = [value]
+                this.removedCategory = null
+                if (this.categoryInput) this.categoryInput.value = ""
+                this.renderCategories()
+                this.categorySelect.value = ""
+            })
+        }
+
+        // 已有学段下拉 + 新增学段（学段是单值：选中即写入输入框，输入框才是保存来源）
+        if (this.stageSelect) {
+            this.stageSelect.addEventListener("change", () => {
+                if (!this.stageInput) return
+                this.stageInput.value = this.stageSelect.value
+                this.stageTouched = true // 用户主动改过，别被 loadExistingData 覆盖
+            })
+        }
+
+        if (this.addStageBtn) {
+            this.addStageBtn.addEventListener("click", () => this.addStage())
+        }
+
+        if (this.stageInput) {
+            // 用户手动输入过学段：标记，避免后续数据加载把输入内容冲掉
+            this.stageInput.addEventListener("input", () => {
+                this.stageTouched = true
+            })
+            this.stageInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") {
+                    e.preventDefault()
+                    this.addStage()
+                }
+            })
+        }
+
+        // 「拼音生成」：按标题重新生成别名（会改变文章链接，故需确认）
+        if (this.generateSlugBtn) {
+            this.generateSlugBtn.addEventListener("click", () => this.generateSlugFromTitle())
+        }
+    }
+
+    /** 学段「添加」：把输入框里的新学段落到当前值，并补进下拉供下次直接选。 */
+    addStage() {
+        if (!this.stageInput) return
+        const name = normalizeTagName(this.stageInput.value)
+        if (!name) return
+        this.stageInput.value = name
+        this.stageTouched = true
+        if (this.stageSelect && !this.existingStages.some((stage) => stage.name === name)) {
+            const option = document.createElement("option")
+            option.value = name
+            option.textContent = name
+            this.stageSelect.appendChild(option)
+        }
+        if (this.stageSelect) this.stageSelect.value = name
+    }
+
+    /**
+     * 用标题的汉语拼音重新生成别名。
+     * 纯英文标题本地 slugify 即可（不打扰服务端）；含中文标题必须问服务端
+     * （拼音库在服务端 vendor，见 core/lib/pinyin.js）。
+     */
+    async generateSlugFromTitle() {
+        const titleEl = document.getElementById("title")
+        const slugEl = document.getElementById("slug")
+        if (!titleEl || !slugEl) return
+
+        const title = titleEl.value.trim()
+        if (!title) {
+            window.alert(tr("editor_slugNeedTitle", null, "请先填写标题"))
+            return
+        }
+        if (slugEl.value.trim() && !window.confirm(tr("editor_slugConfirm", null, "重新生成会改变文章链接（旧链接将失效），确定继续？"))) {
+            return
+        }
+
+        const slug = await this.requestSlug(title)
+        if (!slug) {
+            window.alert(tr("editor_slugFailed", null, "拼音生成失败，请手动填写"))
+            return
+        }
+        slugEl.value = slug
+        slugEl.dispatchEvent(new Event("input", { bubbles: true }))
+    }
+
+    /** 请求服务端生成拼音别名（带 300ms 内的同文本缓存）。 */
+    async requestSlug(title) {
+        const text = String(title || "").trim()
+        if (!text) return ""
+        if (this.slugCache.has(text)) return this.slugCache.get(text)
+        try {
+            const res = await fetch(`/api/slug?text=${encodeURIComponent(text)}`, { credentials: "same-origin" })
+            if (!res.ok) return ""
+            const json = await res.json()
+            const slug = json && json.slug ? String(json.slug) : ""
+            this.slugCache.set(text, slug)
+            return slug
+        } catch {
+            return ""
         }
     }
 
@@ -530,15 +711,19 @@ export class EditorEnhancements {
                 }
 
                 // Load 学段（stage）
-                if (this.stageInput) {
+                // ⚠️ 只有在用户**还没动过**学段输入框时才回填：否则"加载数据"会把刚填的学段冲掉
+                // （历史上正是这个覆盖 + 加载路径漏字段，导致"保存草稿后学段丢失"）。
+                if (this.stageInput && !this.stageTouched) {
                     this.stageInput.value = normalizeTagName(frontmatter.stage || "")
                 }
+                this.renderStageSelect()
             }
         }
 
         // Render the tags and categories
         this.renderTags()
         this.renderCategories()
+        this.renderCategorySelect()
     }
 
     /**

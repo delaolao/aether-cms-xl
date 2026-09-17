@@ -219,3 +219,23 @@ node index.js            # 端口读 .env 里的 PORT=8096
 
 > 另：`content/data/homepage.json` 是**实例数据**（不入库），线上首次在后台点「保存」时创建；
 > 已有文件时保存会先留一份 `.bak`。
+
+## 跨仓改动的坑：复制前必须先比对（2026-09-15 实际踩到）
+
+本仓（xl）与引擎仓的部分文件**已经分叉**（xl 有引擎仓没有的东西，例如
+`GET /api/categories`、首页装修页的 i18n 键、`core/lib/homepage-store.js`、`core/lib/pinyin.js`）。
+
+在引擎仓改好再复制过来的做法本身没错（能绕开 shell 引号破坏代码），但**复制前必须比对两仓该文件是否一致**：
+
+```powershell
+# 两仓同一文件的差异（忽略行尾）
+$a = [IO.File]::ReadAllText($enginePath) -replace "`r`n","`n"
+$b = [IO.File]::ReadAllText($xlPath)     -replace "`r`n","`n"
+$a -eq $b
+```
+
+不一致时**不要整文件覆盖**，而应把引擎仓的改动做成"补丁"应用到 xl 仓（或反过来），
+否则 xl 仓独有内容会被静默抹掉。本次因此丢过 `/api/categories` 与三个 i18n 键，
+好在复核 `git status`（只应出现本次有意改动的文件）时发现了。
+
+**每次复制后固定动作**：`git status --short` 看一眼 —— 出现意料之外的文件就是被覆盖了。
