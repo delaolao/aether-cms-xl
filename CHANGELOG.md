@@ -34,6 +34,19 @@
 **踩坑记录**：STE 会解析 HTML 注释里的 mustache —— `partials/sidebar.html` 的说明注释里写了未闭合的
 `{{#if sidebar}}`，首页直接 500「Unterminated conditional statement」。**注释里不要写模板指令**。
 
+### 🔧 独立校验发现并修掉的两处（发布前）
+
+写完后跑了一遍独立的对照校验（逐模板比对 ember ↔ jade 的变量/元素、STE 配平、CSS 覆盖、JS 选择器契约）：
+
+1. **学段页丢了维度标签**：`templates/collection.html` 的第三类栏目把 eyebrow 写死成「栏目」，
+   而 `stage.js` 传的是 `taxonomyType="学段"` —— ember 显示「学段：高中」，jade 只显示「高中」。
+   已改为 `{{ taxonomyType || '栏目' }}`（分类/标签仍走各自分支）。
+2. **`/stage/:name` 页卡片一直没有标签 chips**（ember 也有，属 core 既有缺陷）：`core/routes/stage.js`
+   把 chips 写在 `metadata.tagsView`，而主题在 `{{#each posts}}` 里读的是**文章级** `tagsView`
+   （`taxonomy.js` 就是这么写的）。已改为两处都写，学段页卡片现在会显示标签。
+3. 另有 4 个 class 只在 jade 里出现却没有任何样式（`theme-jade`/`footer-brand`/`side-label`/`side-block-links`），
+   已补上（顺带给键盘焦点加了可见轮廓）。
+
 **怎么用**：后台「设置 → 主题」切到 Jade 即可（前台即时生效、无需重启；模板/样式每次请求重新读取）。
 本地预览已切到 jade 便于查看。
 

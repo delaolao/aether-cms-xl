@@ -1,7 +1,9 @@
 <div class="collection">
     <header class="collection-hero">
         <div class="container">
-            <p class="collection-eyebrow">{{#if categoryName}}分类{{#elseif tagName}}标签{{#else}}栏目{{/if}}</p>
+            <!-- 第三类栏目（学段等）用路由给的 taxonomyType：stage.js 传的是 taxonomyType="学段"，
+                 写死「栏目」会丢掉维度信息（独立校验发现的缺陷，已修） -->
+            <p class="collection-eyebrow">{{#if categoryName}}分类{{#elseif tagName}}标签{{#else}}{{ taxonomyType || '栏目' }}{{/if}}</p>
             <h1>
                 {{#if categoryName}}
                 {{ categoryName }}
