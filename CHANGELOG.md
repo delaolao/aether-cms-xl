@@ -27,13 +27,21 @@
 - 「最近访问」改为 `formatSiteDateTime(ev.t)`（`YYYY-MM-DD HH:mm:ss`，站点时区）
 - CSV 导出表头 `exported:` 与维护页 `generatedAt` / 「最近更新」同样改为站点时区
   （维护页原先是**手写 `" UTC"` 后缀**的 UTC 时间，误导性最强）
+- 站内搜索结果页（`/search`）的日期改用站点时区：原先是
+  `new Date(publishDate).toISOString().slice(0,10)`，把朴素站点时间当 UTC 处理，同样会差一天；
+  结果排序用的时间戳也不再依赖进程时区
+- 人类可读 sitemap（`/sitemap.html`）的条目日期与页脚 `Last updated` 改用站点时区
+  （原先是服务端 `toLocaleDateString()`，日期随**服务器进程时区**变化）
+- 前台管理条（登录后可见的「创建于 / 更新于」）同样改为站点时区
 - 按天分档 `dayKey()` 改用 `siteDayKey()`（原先依赖进程时区，服务器时区一变，日报与留存的
   跨日边界会整体偏移）
 - 排序用的 `getContentDate()` 改用 `contentInstant()`：`publishDate`（朴素站点时间）与
   `createdAt`（UTC ISO）这两种不同约定都按站点时区解释后再比较
 
 **刻意保持不变**：存储仍是 UTC ISO（`createdAt`/`updatedAt`/访问事件 `t`）、RSS `pubDate` 仍是
-`toUTCString()`、sitemap `lastmod` 仍是 `toISOString()`、后台表格与编辑器日期控件仍是浏览器本地时间。
+`toUTCString()`、sitemap `lastmod` 仍是 `toISOString()`、后台表格与编辑器日期控件仍是**浏览器本地时间**
+（`toLocaleDateString()` 跑在浏览器里，对国内老师即北京时间）；页脚年份等 `new Date().getFullYear()`
+仍取进程时区 —— 仅当服务器不在东八区且正好跨年夜的那 8 小时内才会差一年，暂不改。
 
 **本地验证**（预览 8097，进程 `TZ=UTC` —— 故意让服务器时区与站点时区不同）：
 
@@ -46,6 +54,9 @@
 | 维护页 `generatedAt` / 「最近更新」 | `2026-09-19 09:26:01` / `… 09:10:17` + `timeZone: Asia/Shanghai` |
 | CSV 表头 `exported:` | `2026-09-19 09:26:02` |
 | 设置页把站点时区改成 `UTC` 后再看「最近访问」 | 立刻变 `… 01:25:32`；改回 `Asia/Shanghai` 即恢复 |
+| `/search?q=测试` 结果日期 | `2026-09-18` / `2026-09-17` / `2026-09-19`（各归各位） |
+| `/sitemap.html` 条目日期 + 页脚 | 条目 `2026-09-19`；页脚 `Last updated: 2026-09-19 09:38` |
+| 管理条「创建于/更新于」（createdAt `2026-09-18T20:30Z`） | `2026-09-19`（按 UTC 会错成 09-18） |
 
 > 结论：把进程时区换成 UTC，线上显示的仍是北京时间 —— 与服务器时区真正解耦。
 > 上线后**必须重启** xl 实例（改到了 `core/**`）。

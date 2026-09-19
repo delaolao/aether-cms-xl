@@ -281,6 +281,7 @@ $a -eq $b
 | 核心接入 | `core/app.js`、`core/utils/route-utils.js`、`core/lib/content/utils/content-utils.js` |
 | 统计与维护 | `core/lib/analytics/analytics-store.js`、`core/utils/analytics-utils.js`、`core/lib/maintenance/site-doctor.js` |
 | 后台页面 | `core/admin/views/contents/settings.html`、`core/admin/static/js/i18n.js` |
+| 搜索 / sitemap / 管理条 | `core/routes/search.js`、`core/utils/seo-utils.js`、`core/utils/aether-bar-utils.js` |
 | 主题模板 | `content/themes/default/templates/`（4 个）、`content/themes/ember/templates/`（4 个） |
 
 > ⚠️ `content/themes/ember/templates/index.html` 是 **xl 仓独有**（首页改版过），
