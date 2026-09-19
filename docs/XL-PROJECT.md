@@ -358,3 +358,41 @@ node -e 'const fs=require("fs");const f="homepage.json";const j=JSON.parse(fs.re
 ```bash
 node -e 'const fs=require("fs");const f="homepage.json";const j=JSON.parse(fs.readFileSync(f,"utf8"));/* 这里改 j */ fs.writeFileSync(f,JSON.stringify(j,null,2)+"\n")'
 ```
+
+## 前端主题：契约与新增主题的流程（2026-09-19 新增 jade 时整理）
+
+主题目录：`content/themes/<name>/`，结构固定为
+
+```
+theme.json                 标题/描述/版本/作者/tags/features/screenshot/colors（后台主题列表读它）
+templates/{layout,index,collection,post-content,page-content,404}.html
+partials/{head,header,main,footer,home-banner,category-cards,sidebar,related-posts,wiki-links}.html
+assets/css/{style.css,katex.min.css}      ← katex.min.css 必须自带（数学公式渲染依赖它）
+assets/js/main.js
+screenshot.svg
+```
+
+**必须遵守的 core 契约**（不遵守就整页 500 或功能静默失效）：
+
+| 契约 | 说明 |
+|---|---|
+| `partials/main.html` 的分发标志 | `homeRoute` / `fileType === "post"` / `fileType === "page"` / `taxonomyRoute` / `notFoundRoute`。列表类路由（搜索/标签云/图谱/学段/视频）靠 `resolveTemplatePath()` 回到 `layout.html` 再由这里分发，标志名**不可改名** |
+| 列表页保留 `class="post-grid"` | `core/app.js` 的 `injectWorkbench()` 是按这个字符串找位置插入标签筛选工作台的；没有它，工作台会被塞到 `</main>` 前甚至丢失 |
+| 广告位保留 `data-carousel` / `data-interval` / `data-autoplay` / 内联 `--banner-h` | 前者驱动轮播脚本，`--banner-h` 来自后台「首页装修」的高度设置（140–320px） |
+| 13 个 `--aether-*` 变量 | `/assets/aether-extras.css`（core 自动注入）用它渲染标签工作台、媒体徽章、图谱控件、wiki 链接。新主题的 `:root` 必须全部重新赋值，否则会出现"默认蓝" |
+| **注释里不能写 mustache** | STE 会解析 HTML 注释：未闭合的 `{{#if}}` 会让整页 500（`Unterminated conditional statement`）。jade 的 `partials/sidebar.html` 已踩过一次 |
+| 不用索引取值 | STE 不支持 `{{posts.0.title}}`；要分条就 `{{#each}}` |
+
+**切换主题**：后台「设置 → 主题」写入 `settings.json` 的 `activeTheme` —— 模板/样式/脚本每次请求重新读取，
+**不需要重启**；只有改了 `core/**` 才要重启。
+
+**新增主题要同步的文件**：整目录都要进 `$NewFiles`（同步脚本不认通配符）。jade 是第十五批，共 20 个文件。
+另外 jade 的首页侧边栏依赖 `core/routes/home.js` 的 `buildSidebarData()`（提供 `sidebar.*`），
+这段数据缺失时模板会整块跳过 —— 所以老主题（ember/default）不需要改也能继续用。
+
+**改主题时的自查清单**（本次实测有效）：
+
+1. 注释内 mustache 扫描 + 每个文件 `#if`/`/if`、`#each`/`/each` 配平；
+2. 新主题的 class 是否都在自己的 CSS 或 `aether-extras.css` 里有样式（否则布局会"塌"得莫名其妙）；
+3. 每个路由都点一遍：`/`、`/post/<slug>`、`/category/<名>`、`/stage/<学段>`、`/tag-cloud`、
+   `/search?q=`、`/notes/graph`、`/videos`、`/sitemap.html`、一个不存在的路径（应 404）；

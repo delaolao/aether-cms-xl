@@ -1,0 +1,35 @@
+<!-- ============================================================
+     首页资源分类磁贴（图片 + 文字，数量随分类增减）
+     数据来自 content/data/homepage.json + 文章里实际存在的分类：
+       · 顺序 = 后台「首页装修」里的顺序
+       · 只渲染后台勾选「上线」的分类
+       · 新分类默认不上线（配好图再勾）
+       · 没有图的分类退化为纯文字卡片
+     点击目标：/category/<分类名>（现有分类页，已支持分类×学段交叉筛选）
+     版式：CSS 让第一块占两格（杂志式磁贴），窄屏自动退回单列。
+     ============================================================ -->
+{{#if homepage.categoryCards.length}}
+<div class="cat-grid">
+    {{#each homepage.categoryCards}}
+    <a class="cat-card{{#if image}}{{#else}} is-plain{{/if}}" href="/category/{{ name }}">
+        {{#if image}}
+        <span class="cat-card-media">
+            {{#if mobileImage}}
+            <picture>
+                <source media="(max-width: 620px)" srcset="{{ mobileImage }}" />
+                <img src="{{ image }}" alt="{{ name }}" loading="lazy" decoding="async" />
+            </picture>
+            {{#else}}
+            <img src="{{ image }}" alt="{{ name }}" loading="lazy" decoding="async" />
+            {{/if}}
+        </span>
+        {{/if}}
+        <span class="cat-card-body">
+            <strong class="cat-card-title">{{ name }}</strong>
+            {{#if count}}<span class="cat-card-count">{{ count }} 篇资源</span>{{/if}}
+            {{#if description}}<span class="cat-card-desc">{{ description }}</span>{{/if}}
+        </span>
+    </a>
+    {{/each}}
+</div>
+{{/if}}

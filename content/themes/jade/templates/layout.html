@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+{{#include("partials/head.html")}}
+<body class="theme-jade">
+    <a class="skip-link" href="#main">跳到主要内容</a>
+
+    {{#include("partials/header.html")}}
+
+    <main class="site-main" id="main">
+        {{#include("partials/main.html")}}
+    </main>
+
+    {{#include("partials/footer.html")}}
+
+    <!-- Admin bar -->
+    {{aetherBar}}
+
+    <script src="/content/themes/jade/assets/js/main.js"></script>
+    <!-- Video facade runtime (点击加载视频；静态导出时同样有效) -->
+    <script src="/assets/video-facade.js" defer></script>
+    <!-- Share bar runtime (复制链接 / 微信二维码弹层) -->
+    <script src="/assets/share-bar.js" defer></script>
+</body>
+</html>

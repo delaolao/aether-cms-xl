@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" width="1200" height="760" role="img" aria-label="Jade 主题预览">
+    <defs>
+        <linearGradient id="hero" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#0b3d38" />
+            <stop offset="55%" stop-color="#0f766e" />
+            <stop offset="100%" stop-color="#0d5a52" />
+        </linearGradient>
+        <linearGradient id="cardTop" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#14b8a6" />
+            <stop offset="55%" stop-color="#0f766e" />
+            <stop offset="100%" stop-color="#d9a441" />
+        </linearGradient>
+        <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#d7f2ed" />
+            <stop offset="100%" stop-color="#ffffff" />
+        </linearGradient>
+    </defs>
+
+    <rect width="1200" height="760" fill="#f6f9f8" />
+
+    <!-- 顶栏 -->
+    <rect x="0" y="0" width="1200" height="64" fill="#ffffff" />
+    <rect x="0" y="63" width="1200" height="1" fill="#dfeae6" />
+    <rect x="40" y="18" width="28" height="28" rx="8" fill="#0f766e" />
+    <text x="78" y="32" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#14342e">心理健康教育资源库</text>
+    <text x="78" y="47" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="9" fill="#7d918c" letter-spacing="2">MENTAL HEALTH RESOURCES</text>
+    <g font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="12">
+        <rect x="700" y="18" width="58" height="28" rx="14" fill="#0f766e" />
+        <text x="716" y="36" fill="#ffffff" font-weight="700">首页</text>
+        <text x="778" y="36" fill="#38504a">图谱</text>
+        <text x="832" y="36" fill="#38504a">标签云</text>
+        <text x="898" y="36" fill="#38504a">站内搜索</text>
+        <rect x="982" y="18" width="72" height="28" rx="14" fill="#ffffff" stroke="#c8ddd7" />
+        <text x="998" y="36" fill="#0d5a52">⌕ 搜索</text>
+    </g>
+
+    <!-- 通栏首屏轮播 -->
+    <rect x="0" y="64" width="1200" height="236" fill="url(#hero)" />
+    <circle cx="1000" cy="130" r="150" fill="#14b8a6" opacity="0.18" />
+    <circle cx="180" cy="270" r="120" fill="#5eead4" opacity="0.10" />
+    <text x="70" y="204" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="30" font-weight="800" fill="#ffffff">新学期心理适应资源包</text>
+    <text x="70" y="236" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="14" fill="#d7f2ed">开学第一课 · 情绪管理 · 家校沟通，成套素材可直接下载使用</text>
+    <rect x="70" y="254" width="96" height="30" rx="15" fill="#d9a441" />
+    <text x="92" y="274" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="12" font-weight="700" fill="#3a2c07">查看合集</text>
+    <g fill="#ffffff" opacity="0.5">
+        <circle cx="566" cy="286" r="4" />
+        <circle cx="584" cy="286" r="4" />
+        <circle cx="602" cy="286" r="4" fill="#d9a441" opacity="1" />
+        <circle cx="620" cy="286" r="4" />
+    </g>
+
+    <!-- 资源分类磁贴（第一块占两格） -->
+    <text x="56" y="342" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="16" font-weight="800" fill="#14342e">资源分类</text>
+    <rect x="44" y="341" width="5" height="17" rx="2.5" fill="#14b8a6" />
+    <text x="330" y="342" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="11" fill="#7d918c">按主题进入，快速找到可用素材</text>
+
+    <g>
+        <rect x="44" y="360" width="546" height="150" rx="16" fill="#ffffff" stroke="#dfeae6" />
+        <rect x="44" y="360" width="546" height="66" rx="16" fill="#0f766e" opacity="0.12" />
+        <text x="68" y="436" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="20" font-weight="800" fill="#14342e">心理微课</text>
+        <text x="68" y="462" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="12" fill="#0f766e" font-weight="700">13 篇资源</text>
+        <text x="68" y="486" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="11" fill="#38504a">短小可用的课堂微课与课件素材</text>
+
+        <rect x="604" y="360" width="266" height="71" rx="16" fill="#ffffff" stroke="#dfeae6" />
+        <text x="624" y="392" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="14" font-weight="700" fill="#14342e">心育短视频</text>
+        <text x="624" y="414" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="11" fill="#0f766e">6 篇资源</text>
+
+        <rect x="884" y="360" width="272" height="71" rx="16" fill="url(#tile)" stroke="#c8ddd7" />
+        <text x="904" y="392" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="14" font-weight="700" fill="#14342e">家校共育</text>
+        <text x="904" y="414" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="11" fill="#0f766e">4 篇资源</text>
+
+        <rect x="604" y="439" width="266" height="71" rx="16" fill="#ffffff" stroke="#dfeae6" />
+        <text x="624" y="471" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="14" font-weight="700" fill="#14342e">教师成长</text>
+        <text x="624" y="493" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="11" fill="#0f766e">3 篇资源</text>
+
+        <rect x="884" y="439" width="272" height="71" rx="16" fill="#ffffff" stroke="#dfeae6" />
+        <text x="904" y="471" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="14" font-weight="700" fill="#14342e">心理测评</text>
+        <text x="904" y="493" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="11" fill="#0f766e">2 篇资源</text>
+    </g>
+
+    <!-- 双栏：主列 + 侧边栏 -->
+    <text x="56" y="556" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="16" font-weight="800" fill="#14342e">最新发布</text>
+    <rect x="44" y="555" width="5" height="17" rx="2.5" fill="#14b8a6" />
+    <text x="1010" y="556" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="11" fill="#0f766e">全部资源 →</text>
+
+    <!-- 主列：头图大卡片 -->
+    <rect x="44" y="574" width="748" height="150" rx="16" fill="#ffffff" stroke="#dfeae6" />
+    <rect x="44" y="574" width="748" height="66" rx="16" fill="#0b3d38" />
+    <text x="66" y="676" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="17" font-weight="800" fill="#14342e">小学生心理问题解决</text>
+    <text x="66" y="700" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="11" fill="#7d918c">2026-09-10 · admin · 高中 · 👁 128</text>
+    <text x="66" y="716" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="11" fill="#38504a">课堂常见问题的识别与三步应对策略</text>
+    <text x="706" y="640" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="11" fill="#d7f2ed">▶ 12:36</text>
+
+    <!-- 主列：两张小卡片 -->
+    <rect x="44" y="738" width="362" height="1" rx="0" fill="#dfeae6" />
+    <rect x="430" y="738" width="362" height="1" rx="0" fill="#dfeae6" />
+
+    <!-- 侧边栏 -->
+    <rect x="818" y="574" width="338" height="120" rx="16" fill="#ffffff" stroke="#dfeae6" />
+    <rect x="834" y="592" width="4" height="12" rx="2" fill="#d9a441" />
+    <text x="846" y="602" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="12" font-weight="800" fill="#14342e">分类导航</text>
+    <g font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="11" fill="#38504a">
+        <text x="836" y="626">心理微课</text><text x="1128" y="626" fill="#0f766e">13</text>
+        <text x="836" y="648">心育短视频</text><text x="1128" y="648" fill="#0f766e">6</text>
+        <text x="836" y="670">家校共育</text><text x="1128" y="670" fill="#0f766e">4</text>
+    </g>
+    <rect x="818" y="706" width="338" height="96" rx="16" fill="#ffffff" stroke="#dfeae6" />
+    <rect x="834" y="724" width="4" height="12" rx="2" fill="#d9a441" />
+    <text x="846" y="734" font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="12" font-weight="800" fill="#14342e">热门标签</text>
+    <g font-family="Microsoft YaHei, Segoe UI, sans-serif" font-size="10" fill="#0d5a52">
+        <rect x="834" y="746" width="66" height="24" rx="12" fill="#eefaf7" stroke="#dfeae6" />
+        <text x="850" y="762">情绪管理</text>
+        <rect x="908" y="746" width="58" height="24" rx="12" fill="#eefaf7" stroke="#dfeae6" />
+        <text x="922" y="762">青春期</text>
+        <rect x="974" y="746" width="58" height="24" rx="12" fill="#eefaf7" stroke="#dfeae6" />
+        <text x="988" y="762">专注力</text>
+        <rect x="1040" y="746" width="72" height="24" rx="12" fill="#eefaf7" stroke="#dfeae6" />
+        <text x="1054" y="762">家校沟通</text>
+    </g>
+
+    <!-- 页脚 -->
+    <rect x="0" y="820" width="1200" height="1" fill="#0b3d38" />
+</svg>

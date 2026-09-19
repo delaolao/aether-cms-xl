@@ -1,0 +1,25 @@
+{
+    "title": "Jade",
+    "description": "A calm, magazine-style theme in jade green: full-bleed hero carousel, tiled category grid, and a two-column home layout with a sticky sidebar (categories · hot tags · stages · reading ranking). Fully compatible with Aether's Obsidian wiki links, knowledge graph, tag workbench, tag cloud, stage browsing and site logo.",
+    "version": "1.0.0",
+    "author": "delaolao",
+    "authorUrl": "https://github.com/delaolao",
+    "tags": ["jade", "calm", "magazine", "two-column", "sidebar", "cards", "responsive"],
+    "license": "GPL-3.0-or-later",
+    "features": [
+        "Site logo display",
+        "Responsive",
+        "Sticky header",
+        "Full-bleed hero carousel",
+        "Tiled category grid",
+        "Two-column home with sidebar",
+        "Reading ranking",
+        "Post cards",
+        "Wiki links",
+        "Knowledge graph",
+        "Tag workbench",
+        "Distinct layout & palette"
+    ],
+    "screenshot": "screenshot.svg",
+    "colors": ["#0f766e", "#14b8a6", "#d9a441"]
+}

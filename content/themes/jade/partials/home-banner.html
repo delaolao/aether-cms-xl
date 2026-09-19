@@ -1,0 +1,50 @@
+<!-- ============================================================
+     首页广告位轮播（通栏首屏）
+     数据来自 content/data/homepage.json（后台「首页装修」维护，与文章无关）。
+
+     出图规格：桌面 1600x320（5:1）；手机图可选 750x320，不填则手机端用桌面图居中裁切
+     （手机端只保留中央约 46% 宽 → 关键内容放中间 60% 以内）。
+     文字：每条广告可单独关掉「叠加文字」（文字做在图里）。
+     高度：后台「首页装修」的高度值通过内联 --banner-h 传入（140–320px）。
+
+     无 JS 时：第一张靠 CSS :first-child 保持可见（见 style.css），不会空白。
+     ⚠️ STE 会解析 HTML 注释里的 mustache，注释里不要写未配对的模板指令（会 500）。
+     ============================================================ -->
+{{#if homepage.banners.length}}
+<section class="home-banner" data-carousel data-interval="{{ homepage.settings.intervalMs }}" data-autoplay="{{#if homepage.settings.autoplay}}1{{#else}}0{{/if}}" style="--banner-h: {{ homepage.settings.bannerHeightPx }}px" aria-label="首页推荐">
+    <div class="banner-viewport">
+        {{#each homepage.banners}}
+        <a class="banner-slide" {{#if url}}href="{{ url }}"{{/if}}>
+            {{#if mobileImage}}
+            <picture>
+                <source media="(max-width: 620px)" srcset="{{ mobileImage }}" />
+                <img class="banner-image" src="{{ image }}" alt="{{ title }}" loading="lazy" decoding="async" />
+            </picture>
+            {{#else}}
+            <img class="banner-image" src="{{ image }}" alt="{{ title }}" loading="lazy" decoding="async" />
+            {{/if}}
+            {{#if showText}}
+            {{#if title}}
+            <span class="banner-caption">
+                <span class="banner-caption-inner">
+                    <strong class="banner-title">{{ title }}</strong>
+                    {{#if subtitle}}<span class="banner-subtitle">{{ subtitle }}</span>{{/if}}
+                </span>
+            </span>
+            {{/if}}
+            {{/if}}
+        </a>
+        {{/each}}
+    </div>
+
+    {{#if homepage.hasMultipleBanners}}
+    <button type="button" class="banner-nav is-prev" aria-label="上一张">‹</button>
+    <button type="button" class="banner-nav is-next" aria-label="下一张">›</button>
+    <div class="banner-dots" role="tablist" aria-label="选择轮播图">
+        {{#each homepage.banners}}
+        <button type="button" class="banner-dot" aria-label="选择这张轮播图"></button>
+        {{/each}}
+    </div>
+    {{/if}}
+</section>
+{{/if}}

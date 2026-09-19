@@ -19,6 +19,10 @@ content/themes/*
 # Built-in custom theme shipped with this repo (ember)
 !content/themes/ember
 
+# 本站新前端主题（2026-09-19）：杂志式布局 + 青玉配色。
+# 主题属于代码（不是实例数据），必须入库 —— 否则只能靠同步脚本的文件清单部署，仓库里没有留档。
+!content/themes/jade
+
 # User uploads
 /content/uploads/
 

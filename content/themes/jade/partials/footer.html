@@ -1,0 +1,25 @@
+<footer class="site-footer">
+    <div class="container footer-grid">
+        <div class="footer-brand">
+            <strong class="footer-title">{{ site.siteTitle }}</strong>
+            <p class="footer-desc">{{ site.siteDescription }}</p>
+        </div>
+
+        <nav class="footer-nav" aria-label="页脚导航">
+            <span class="footer-nav-title">站内入口</span>
+            <ul>
+                <li><a href="/notes/graph">知识图谱</a></li>
+                <li><a href="/tag-cloud">标签云</a></li>
+                <li><a href="/stage">按学段浏览</a></li>
+                <li><a href="/videos">视频库</a></li>
+                <li><a href="/search">站内搜索</a></li>
+                <li><a href="/sitemap.html">站点地图</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="footer-bottom">
+        <p>&copy; {{ year }} {{ site.siteTitle }}. All rights reserved.</p>
+        {{ site.footerCode }}
+    </div>
+</footer>

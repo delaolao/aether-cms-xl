@@ -1,0 +1,73 @@
+<div class="collection">
+    <header class="collection-hero">
+        <div class="container">
+            <p class="collection-eyebrow">{{#if categoryName}}分类{{#elseif tagName}}标签{{#else}}栏目{{/if}}</p>
+            <h1>
+                {{#if categoryName}}
+                {{ categoryName }}
+                {{#elseif tagName}}
+                {{ tagName }}
+                {{#else}}
+                {{ taxonomyTerm }}
+                {{/if}}
+            </h1>
+            {{#if taxonomyType === 'category'}}
+            <p class="collection-desc">该分类下的全部资源。</p>
+            {{#elseif taxonomyType === 'tag'}}
+            <p class="collection-desc">标签「{{ taxonomyTerm }}」下的资源。</p>
+            {{/if}}
+            <p class="collection-stat"><span class="post-views" title="本页访问次数">👁 {{ viewCount || 0 }}</span></p>
+        </div>
+    </header>
+
+    <div class="container collection-wrap">
+        <!-- 标签筛选工作台（AND）由 core 自动注入到 .post-grid 之前（见 core/app.js 的 injectWorkbench） -->
+
+        <div class="post-grid">
+            {{#each posts}}
+            <article class="post-card">
+                <div class="card-top"></div>
+                {{#if metadata.videoCover}}
+                <a class="post-cover" href="/post/{{metadata.slug}}">
+                    {{#if metadata.videoCover.ready}}
+                    <img src="{{ metadata.videoCover.thumbnailUrl }}" alt="{{ metadata.videoCover.title }}" loading="lazy" decoding="async" />
+                    {{/if}}
+                    <span class="post-cover-play" aria-hidden="true">▶</span>
+                    {{#if metadata.videoCover.durationText}}<span class="post-cover-duration">{{ metadata.videoCover.durationText }}</span>{{/if}}
+                </a>
+                {{/if}}
+                <div class="card-body">
+                    <h2 class="card-title"><a href="/post/{{metadata.slug}}">{{metadata.title}}</a>{{#if metadata.mediaIcons.length}}<span class="post-media-badges">{{#each metadata.mediaIcons}}<span class="media-badge {{ type }}" title="{{ label }}">{{ icon }}</span>{{/each}}</span>{{/if}}</h2>
+                    <div class="card-meta">
+                        {{ metadata.displayDate }}
+                        {{#if metadata.author}} · {{metadata.author}}{{/if}}
+                        {{#if metadata.stage}}<a class="post-stage" href="/stage/{{metadata.stage}}" title="学段">{{metadata.stage}}</a>{{/if}}
+                        <span class="post-views" title="阅读次数"> · 👁 {{ metadata.viewCount || 0 }}</span>
+                    </div>
+                    {{#if tagsView.length}}
+                    <div class="post-tags">
+                        {{#each tagsView}}
+                        <a class="filter-chip chip-mini {{#if active}}active{{/if}}" href="{{ href }}" title="{{ name }} ({{ count }})">{{ name }}</a>
+                        {{/each}}
+                    </div>
+                    {{/if}}
+                    {{#if metadata.subtitle}}
+                    <p class="card-sub">{{metadata.subtitle}}</p>
+                    {{#else}}
+                    <p class="card-excerpt">{{ metadata.excerpt || (content | truncate(60)) }}</p>
+                    {{/if}}
+                    <a class="read-more" href="/post/{{metadata.slug}}">阅读全文 →</a>
+                </div>
+            </article>
+            {{/each}}
+        </div>
+
+        {{#if pagination}}
+        <div class="pagination">
+            {{#if pagination.urls.prev}}<a href="{{pagination.urls.prev}}">&larr; 上一页</a>{{/if}}
+            <span>第 {{ pagination.currentPage }} / {{ pagination.totalPages }} 页</span>
+            {{#if pagination.urls.next}}<a href="{{pagination.urls.next}}">下一页 &rarr;</a>{{/if}}
+        </div>
+        {{/if}}
+    </div>
+</div>

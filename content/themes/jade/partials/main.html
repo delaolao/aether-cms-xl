@@ -1,0 +1,14 @@
+<!-- Route dispatcher: picks the right body template based on the route flags.
+     ⚠️ 保持与 core 路由的约定：resolveTemplatePath() 会回落到 layout.html，
+     再由这里按标志分发；标志名（homeRoute / fileType / taxonomyRoute / notFoundRoute）不可改。 -->
+{{#if homeRoute}}
+{{#include("templates/index.html")}}
+{{#elseif fileType === "post"}}
+{{#include("templates/post-content.html")}}
+{{#elseif fileType === "page"}}
+{{#include("templates/page-content.html")}}
+{{#elseif taxonomyRoute}}
+{{#include("templates/collection.html")}}
+{{#elseif notFoundRoute}}
+{{#include("templates/404.html")}}
+{{/if}}

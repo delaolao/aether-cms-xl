@@ -1,0 +1,50 @@
+<article class="post">
+    <header class="post-hero">
+        <div class="container">
+            <h1>{{ metadata.title }}</h1>
+            {{#if metadata.subtitle}}
+            <p class="post-subtitle">{{metadata.subtitle}}</p>
+            {{/if}}
+            <div class="post-meta">
+                <span class="post-date">{{ metadata.displayDate }}</span>
+                {{#if metadata.author}} · <span>{{metadata.author}}</span>{{/if}}
+                {{#if metadata.stage}}<a class="post-stage" href="/stage/{{metadata.stage}}" title="学段">{{metadata.stage}}</a>{{/if}}
+                <span class="post-views" title="阅读次数"> · 👁 {{ viewCount || 0 }}</span>
+                {{#if metadata.category}} · <a href="/category/{{metadata.category}}">{{metadata.category}}</a>{{/if}}
+                {{#if metadata.tags}}
+                · <span class="post-tags">{{#each metadata.tags}}<a href="/tag/{{this}}">#{{this}}</a> {{/each}}</span>
+                {{/if}}
+            </div>
+        </div>
+    </header>
+
+    <div class="container post-layout">
+        <div class="post-main">
+            <div class="post-content">{{ content }}</div>
+
+            <footer class="post-nav">
+                {{#if prevPost}}<a class="post-nav-link is-prev" href="/post/{{ prevPost.slug }}"><span class="post-nav-label">上一篇</span><span class="post-nav-title">{{ prevPost.title }}</span></a>{{/if}}
+                {{#if nextPost}}<a class="post-nav-link is-next" href="/post/{{ nextPost.slug }}"><span class="post-nav-label">下一篇</span><span class="post-nav-title">{{ nextPost.title }}</span></a>{{/if}}
+            </footer>
+
+            {{#if metadata.relatedPostsData}} {{#include("partials/related-posts.html")}} {{/if}}
+
+            {{#include("partials/wiki-links.html")}}
+        </div>
+
+        <!-- 阅读辅助栏：目录由 JS 从正文标题生成；无标题时整块自动隐藏 -->
+        <aside class="post-aside" aria-label="文章导航">
+            <nav class="post-toc" data-toc hidden>
+                <h3 class="side-title">本文目录</h3>
+                <ol class="post-toc-list" data-toc-list></ol>
+            </nav>
+            <div class="post-aside-links">
+                <a href="/notes/graph">知识图谱</a>
+                <a href="/tag-cloud">标签云</a>
+                <a href="/stage">按学段浏览</a>
+                <a href="/search">站内搜索</a>
+            </div>
+            <button type="button" class="to-top" data-to-top hidden>回到顶部 ↑</button>
+        </aside>
+    </div>
+</article>

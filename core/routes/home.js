@@ -2,6 +2,10 @@ import { prepareTemplateData, processTemplateData } from "../utils/route-utils.j
 import { resolveTemplatePath, checkCustomTemplate } from "../utils/template-utils.js"
 import { HomepageStore, toPublicUrl } from "../lib/homepage-store.js"
 import { collectCategoryCounts, mergeCategoryCards, visibleCategoryCards } from "../utils/category-utils.js"
+import { getTagFrequency } from "../utils/tag-cloud-utils.js"
+import { countStages } from "../utils/taxonomy-filter-utils.js"
+import { getContentDisplayDate } from "../lib/content/utils/content-utils.js"
+import { contentInstant } from "../utils/time-utils.js"
 
 export function setupHomeRoutes(app, systems) {
     const { themeManager, contentManager, hookSystem, analyticsStore, paths } = systems
@@ -39,6 +43,63 @@ export function setupHomeRoutes(app, systems) {
         }
     }
 
+    /**
+     * 杂志式主题（jade）右侧边栏的数据。只有首页需要，所以一次算好传给模板；
+     * 没接这段数据的主题会忽略它（模板里用 {{#if sidebar}} 兜底，不会报错）。
+     *
+     *   categories 分类 + 篇数（与首页装修、分类页同一套聚合口径）
+     *   tags       热门标签（别名已归一，链接用 slug）
+     *   stages     学段分布（按教育阶段顺序）
+     *   ranking    阅读排行；没有任何阅读数据时退回「最新发布」，避免出现一排 0
+     */
+    async function buildSidebarData({ tagLimit = 14, stageLimit = 8, rankLimit = 5 } = {}) {
+        const counts = await collectCategoryCounts(contentManager)
+        const categories = counts.slice(0, 10)
+        const tags = (await getTagFrequency(contentManager)).slice(0, tagLimit)
+
+        let allPosts = []
+        try {
+            allPosts = await contentManager.getPosts({ status: "published", frontmatterOnly: true })
+        } catch (error) {
+            console.error("首页侧边栏：读取文章失败:", error.message)
+        }
+
+        const stages = countStages(allPosts).slice(0, stageLimit)
+        const withViews = allPosts.map((post) => {
+            const fm = post.frontmatter || {}
+            const views = analyticsStore
+                ? analyticsStore.viewCountFor({ id: fm.id, slug: fm.slug, path: `/notes/${fm.slug}` }) || 0
+                : 0
+            return {
+                title: fm.title || "未命名",
+                slug: fm.slug || "",
+                views,
+                instant: contentInstant(fm),
+                date: getContentDisplayDate(fm),
+            }
+        })
+
+        const hasViews = withViews.some((item) => item.views > 0)
+        const sorted = withViews
+            .slice()
+            .sort((a, b) => (hasViews ? b.views - a.views || b.instant - a.instant : b.instant - a.instant))
+
+        return {
+            categories,
+            tags,
+            stages,
+            ranking: {
+                title: hasViews ? "阅读排行" : "最新发布",
+                items: sorted.slice(0, rankLimit).map((item) => ({
+                    title: item.title,
+                    slug: item.slug,
+                    views: hasViews ? item.views : 0,
+                    date: item.date,
+                })),
+            },
+        }
+    }
+
     // Handle the homepage route
     app.get("/", async (req, res) => {
         try {
@@ -72,6 +133,8 @@ export function setupHomeRoutes(app, systems) {
                 homeRoute: true,
                 // 首页装修：广告位 + 资源分类卡片（管理员在后台维护，与文章内容无关）
                 homepage: await buildHomepageData(),
+                // 杂志式主题（jade）的右侧边栏：分类 / 热门标签 / 学段 / 阅读排行
+                sidebar: await buildSidebarData(),
                 year: new Date().getFullYear(),
             })
 

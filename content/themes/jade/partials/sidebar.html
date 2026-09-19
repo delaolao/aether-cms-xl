@@ -1,0 +1,72 @@
+<!-- ============================================================
+     首页右侧边栏（jade 主题新增）
+     数据由 core/routes/home.js 的 buildSidebarData() 提供：
+       sidebar.categories  [{name, count}]          分类 + 篇数
+       sidebar.tags        [{name, slug, count}]    热门标签（已做别名归一）
+       sidebar.stages      [{name, slug, count}]    学段分布（按教育阶段排序）
+       sidebar.ranking     {title, items:[{title, slug, views}]}  阅读排行 / 无统计时退回最新发布
+     整块用「sidebar 是否存在」判断兜底：其它主题或没接数据时不会渲染，也不会报错。
+     ⚠️ STE 会解析 HTML 注释里的 mustache：注释里绝不能写未配对的模板指令（会 500，本主题踩过一次）。
+     ============================================================ -->
+{{#if sidebar}}
+<aside class="home-sidebar" aria-label="侧边栏">
+    {{#if sidebar.categories.length}}
+    <section class="side-block">
+        <h3 class="side-title">分类导航</h3>
+        <ul class="side-list">
+            {{#each sidebar.categories}}
+            <li><a href="/category/{{ name }}"><span class="side-label">{{ name }}</span><span class="side-count">{{ count }}</span></a></li>
+            {{/each}}
+        </ul>
+    </section>
+    {{/if}}
+
+    {{#if sidebar.tags.length}}
+    <section class="side-block">
+        <h3 class="side-title">热门标签</h3>
+        <div class="side-tags">
+            {{#each sidebar.tags}}
+            <a class="side-tag" href="/tag/{{ slug }}" title="{{ name }}（{{ count }} 篇）">{{ name }}<em>{{ count }}</em></a>
+            {{/each}}
+        </div>
+    </section>
+    {{/if}}
+
+    {{#if sidebar.stages.length}}
+    <section class="side-block">
+        <h3 class="side-title">按学段浏览</h3>
+        <ul class="side-list">
+            {{#each sidebar.stages}}
+            <li><a href="/stage/{{ name }}"><span class="side-label">{{ name }}</span><span class="side-count">{{ count }}</span></a></li>
+            {{/each}}
+        </ul>
+    </section>
+    {{/if}}
+
+    {{#if sidebar.ranking.items.length}}
+    <section class="side-block">
+        <h3 class="side-title">{{ sidebar.ranking.title }}</h3>
+        <ol class="side-rank">
+            {{#each sidebar.ranking.items}}
+            <li>
+                <a href="/post/{{ slug }}">{{ title }}</a>
+                {{#if views}}<span class="side-rank-views">👁 {{ views }}</span>{{/if}}
+            </li>
+            {{/each}}
+        </ol>
+    </section>
+    {{/if}}
+
+    <section class="side-block side-block-links">
+        <h3 class="side-title">站内入口</h3>
+        <div class="side-links">
+            <a href="/notes/graph">知识图谱</a>
+            <a href="/tag-cloud">标签云</a>
+            <a href="/stage">学段总览</a>
+            <a href="/videos">视频库</a>
+            <a href="/search">站内搜索</a>
+            <a href="/sitemap.html">站点地图</a>
+        </div>
+    </section>
+</aside>
+{{/if}}
