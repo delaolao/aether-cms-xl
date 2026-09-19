@@ -38,7 +38,10 @@ export async function collectCategoryCounts(contentManager, options = {}) {
  * 规则（2026-09-15 与使用方确定）：
  *   - 顺序 = 后台数组顺序（就是前台显示顺序）
  *   - 文章里有、后台还没配的分类：追加到末尾，enabled=false（**默认不上首页**）
- *   - 后台配了、但文章里已经没有的分类：仍保留（可能正在筹建），count=0 并标记 missing
+ *   - 后台配了、但文章里已经没有的分类：仍保留（可能正在筹建），count=0 并标记 missing。
+ *     例外：「空孤儿卡片」（未上线 + 无图 + 无说明）会在**保存时**被丢弃
+ *     —— 否则删掉文章后，这一行在装修页上永远删不掉（界面只有「清除配置」，保存又会写回）。
+ *     实测踩过：测试分类「技术」的文章删掉后，装修页仍一直显示它。见 api/homepage-api.js
  *
  * @param {Array<{name: string, image?: string, description?: string, enabled?: boolean}>} configured
  * @param {Array<{name: string, count: number}>} counts

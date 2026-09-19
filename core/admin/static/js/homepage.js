@@ -160,6 +160,7 @@
                         <button type="button" class="btn-secondary hp-move" data-dir="-1" ${index === 0 ? "disabled" : ""}>上移</button>
                         <button type="button" class="btn-secondary hp-move" data-dir="1" ${index === total - 1 ? "disabled" : ""}>下移</button>
                         ${card.configured ? `<button type="button" class="btn-secondary hp-reset">清除配置</button>` : ""}
+                        <button type="button" class="btn-secondary hp-danger hp-remove">删除</button>
                     </span>
                 </div>
             </div>
@@ -318,10 +319,22 @@
             if (remove) {
                 const found = listOf(remove)
                 if (!found) return
-                if (!window.confirm("确定删除这条广告位？")) return
+                const isCategory = found.kind === "category"
+                // 分类卡片的「删除」只移除这里的卡片配置，不动文章：
+                // 文章里还有的分类，保存后会以「未配置」形态回到列表（这就是它的语义）；
+                // 文章里已经没有的分类，条目会彻底消失。
+                const name = isCategory ? String(found.list[found.index]?.name || "") : ""
+                const stillHasPosts = isCategory && Number(found.list[found.index]?.count || 0) > 0
+                const ask = isCategory
+                    ? `确定移除「${name}」这张分类卡片吗？\n（只删除首页装修里的卡片配置，不会删除任何文章）` +
+                      (stillHasPosts
+                          ? `\n\n注意：「${name}」下还有 ${found.list[found.index].count} 篇文章，保存后会以「未配置」形式回到列表。`
+                          : "")
+                    : "确定删除这条广告位？"
+                if (!window.confirm(ask)) return
                 found.list.splice(found.index, 1)
                 renderAll()
-                setStatus("已删除，别忘了点「保存」", "warn")
+                setStatus(isCategory ? "已移除该分类卡片，别忘了点「保存」" : "已删除，别忘了点「保存」", "warn")
                 return
             }
 

@@ -13,6 +13,22 @@
 import { HomepageStore, normalizeHomepage, toPublicUrl } from "../lib/homepage-store.js"
 import { collectCategoryCounts, mergeCategoryCards } from "../utils/category-utils.js"
 
+/**
+ * 卡片是否带有人工配置（图片 / 说明 / 已勾选上线）。
+ *
+ * 用来区分两种「文章里已经没有的分类」：
+ *   - 有人工配置 → 保留（可能正在筹建，配好图再发文章）
+ *   - 空孤儿卡片 → 保存时丢弃，否则它在装修页上永远删不掉（真实踩到过：删了测试文章，
+ *     后台仍一直显示那个分类，因为分类卡片是文章聚合出来的、界面又只能「清除配置」）
+ */
+function cardHasConfig(card) {
+    const image = String(card?.image || "").trim()
+    const mobileImage = String(card?.mobileImage || "").trim()
+    const description = String(card?.description || "").trim()
+    const enabled = card?.enabled === true || /^(1|true|yes|on)$/i.test(String(card?.enabled ?? ""))
+    return Boolean(image || mobileImage || description || enabled)
+}
+
 export function setupHomepageApi(app, systems) {
     const { authenticate, contentManager, paths } = systems
     const dataDir = paths?.dataDir || "content/data"
@@ -48,13 +64,25 @@ export function setupHomepageApi(app, systems) {
 
     // 整体保存：后台页提交的 categoryCards 只包含「需要落盘的字段」，
     // 这里过一遍 normalizeHomepage，服务端始终是可信数据的最后一关。
+    // 另外顺手清理「空孤儿卡片」（文章里已无此分类 + 未上线 + 无图 + 无说明）。
     app.put("/api/homepage", authenticate, async (req, res) => {
         try {
             const body = req.body && typeof req.body === "object" ? req.body : {}
+
+            // 分类篇数要在保存前算，用来判断哪些卡片是孤儿
+            const counts = await collectCategoryCounts(contentManager)
+            const liveCategories = new Set(counts.map((item) => item.name.toLowerCase()))
+            const cards = (Array.isArray(body.categoryCards) ? body.categoryCards : []).filter((card) => {
+                const name = String(card?.name || "").trim()
+                if (!name) return false
+                if (liveCategories.has(name.toLowerCase())) return true
+                return cardHasConfig(card)
+            })
+
             const normalized = normalizeHomepage({
                 settings: body.settings,
                 banners: body.banners,
-                categoryCards: (Array.isArray(body.categoryCards) ? body.categoryCards : []).map((card) => ({
+                categoryCards: cards.map((card) => ({
                     name: card?.name,
                     image: card?.image,
                     mobileImage: card?.mobileImage,
@@ -64,7 +92,6 @@ export function setupHomepageApi(app, systems) {
             })
 
             const saved = await store.save(normalized)
-            const counts = await collectCategoryCounts(contentManager)
 
             res.json({
                 success: true,

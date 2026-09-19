@@ -321,3 +321,40 @@ $b = [System.IO.File]::ReadAllBytes($path); $b[0..2]   # 期望 239 187 191
 ```
 
 源码文件（`.js`/`.html`/`.md`）在库里**没有** BOM，保持现状即可。
+
+## 首页装修：分类卡片与文章的关系（2026-09-19 实际踩到）
+
+**分类不是独立实体**，只是文章 frontmatter 里的 `category` 字段，所以「有哪些分类」永远是从**已发布文章**
+聚合出来的（`core/utils/category-utils.js` 的 `collectCategoryCounts()`）。由此带来一个容易误判的现象：
+
+1. 装修页点过一次「保存」，**页面上所有分类**（包括还没配图的）都会被写进 `content/data/homepage.json`；
+2. 读取时 `mergeCategoryCards()` 按约定保留「后台配了、但文章里已经没有」的分类（支持"筹建中"），
+   标记 `missing`（界面显示「文章里已无此分类」）；
+3. 于是**删掉文章也不会让那一行消失**，而分类卡片原先只有「清除配置」（只清空字段，保存又写回）。
+
+现在的行为（v0.17.4 起）：
+
+| 操作 | 结果 |
+|---|---|
+| 分类卡片行点「删除」→ 保存 | 文章里**已无**该分类 → 彻底消失 |
+| 同上，但该分类**还有文章** | 卡片配置被清掉，保存后以「未配置」形态回到列表（确认框会提示还有几篇） |
+| 直接点「保存」（不点删除） | **空孤儿卡片**（未上线 + 无图 + 无说明 + 文章里已无此分类）自动被丢弃 |
+| 孤儿卡片但配过图/说明/已上线 | **保留**，不会被误删 |
+
+想彻底不要某个分类，正确顺序永远是**先改文章**（删文章或改 `category`），再看装修页；反过来做无效。
+
+手工清理线上那条（改文件、不需要重启；程序保存时也会自动留 `homepage.json.bak`）：
+
+```bash
+cd /data/te_se_zi_yuan/xl/aether-cms/content/data
+cp homepage.json homepage.json.bak-manual-$(date +%F)
+node -e 'const fs=require("fs");const f="homepage.json";const j=JSON.parse(fs.readFileSync(f,"utf8"));const n=j.categoryCards.length;j.categoryCards=j.categoryCards.filter(c=>c.name!=="技术");fs.writeFileSync(f,JSON.stringify(j,null,2)+"\n");console.log("已移除 "+(n-j.categoryCards.length)+" 条")'
+```
+
+⚠️ `homepage.json` 属于**实例数据**（不入库）。手工编辑时别用「记事本 / `Set-Content -Encoding UTF8`」——
+它们会加 UTF-8 BOM，而 `JSON.parse` 遇到 BOM 直接抛错，整份配置会被**静默当成空配置**
+（现象：装修页上广告位与分类卡片全没了）。v0.17.4 已在读取时剥掉 BOM 兜底，但仍建议用 Node 写：
+
+```bash
+node -e 'const fs=require("fs");const f="homepage.json";const j=JSON.parse(fs.readFileSync(f,"utf8"));/* 这里改 j */ fs.writeFileSync(f,JSON.stringify(j,null,2)+"\n")'
+```

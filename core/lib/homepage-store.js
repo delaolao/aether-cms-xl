@@ -150,7 +150,10 @@ export class HomepageStore {
     async load() {
         try {
             const text = await readFile(this.filePath, "utf8")
-            return normalizeHomepage(JSON.parse(text))
+            // 手工编辑过的文件可能带 UTF-8 BOM（记事本 / PowerShell Set-Content 就会加），
+            // 而 JSON.parse 遇到 BOM 会直接抛错 —— 那会导致**整份配置被静默当成空配置**。
+            // 这里先剥掉，实测踩到过（本机造测试数据时用 Set-Content -Encoding UTF8 正中此坑）。
+            return normalizeHomepage(JSON.parse(text.replace(/^\uFEFF/, "")))
         } catch (error) {
             if (error.code !== "ENOENT") {
                 console.error(`[homepage] 读取失败（将使用默认值）: ${error.message}`)
