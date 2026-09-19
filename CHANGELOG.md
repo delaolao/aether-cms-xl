@@ -4,6 +4,52 @@
 
 > 版本号遵循语义化。
 
+## [0.17.3] - 2026-09-19
+
+### 🕒 站点时区：所有展示时间与服务器时区解耦（使用方需求）
+
+**问题**：后台「访问统计 → 最近访问」直接输出存储里的 UTC ISO（`2026-09-18T23:12:52.336Z`），
+比北京时间少 8 小时；前台文章日期用的是 LiteNode 的 `dateFormat`（**默认 `useUTC=true`**），
+而 `publishDate` 存的是**站点墙钟时间** —— 于是北京时间 00:00–07:59 发布的文章会显示成**前一天**
+（线上实测已中招 2 篇：`2026-09-10T07:56`、`07:49` 显示为 09-09）。
+
+**方案**：引入显式「站点时区」（默认 `Asia/Shanghai`），与服务器进程时区**解耦**；
+后台与前台的时间全部按站点时区呈现，且**不再带 UTC 标注**。
+
+- 新增 `core/utils/time-utils.js`：`parseSiteDateTime` / `formatInSiteZone` / `siteDayKey` /
+  `displayDateOf` / `contentInstant` / `getSiteTimeZone`。时区来源优先级：
+  `SITE_TIME_ZONE` 环境变量 → `settings.json.timeZone` → 默认 `Asia/Shanghai`
+- 后台「设置 → 常规」新增**站点时区**下拉（`settings.html`，i18n 键 `settings_timeZone` /
+  `settings_timeZoneHelp`，zh/en 都有）；保存即生效（读的是 `settingsService` 的同步缓存），**无需重启**
+- 前台日期改为数据层预计算的 `displayDate`（站点时区 `YYYY-MM-DD`），模板从
+  `{{ … | dateFormat('YYYY-MM-DD') }}` 改为 `{{ metadata.displayDate }}`（8 个模板文件，
+  default × 4 + ember × 4）
+- 「最近访问」改为 `formatSiteDateTime(ev.t)`（`YYYY-MM-DD HH:mm:ss`，站点时区）
+- CSV 导出表头 `exported:` 与维护页 `generatedAt` / 「最近更新」同样改为站点时区
+  （维护页原先是**手写 `" UTC"` 后缀**的 UTC 时间，误导性最强）
+- 按天分档 `dayKey()` 改用 `siteDayKey()`（原先依赖进程时区，服务器时区一变，日报与留存的
+  跨日边界会整体偏移）
+- 排序用的 `getContentDate()` 改用 `contentInstant()`：`publishDate`（朴素站点时间）与
+  `createdAt`（UTC ISO）这两种不同约定都按站点时区解释后再比较
+
+**刻意保持不变**：存储仍是 UTC ISO（`createdAt`/`updatedAt`/访问事件 `t`）、RSS `pubDate` 仍是
+`toUTCString()`、sitemap `lastmod` 仍是 `toISOString()`、后台表格与编辑器日期控件仍是浏览器本地时间。
+
+**本地验证**（预览 8097，进程 `TZ=UTC` —— 故意让服务器时区与站点时区不同）：
+
+| 检查项 | 结果 |
+|---|---|
+| `publishDate: 2026-09-18T00:30`（首页卡片 + 文章页） | `2026-09-18`（修复前为 09-17） |
+| `publishDate: 2026-09-17T22:38` | `2026-09-17` |
+| 只有 `createdAt: 2026-09-18T20:30Z`（北京 09-19 04:30） | `2026-09-19` |
+| 「最近访问」（事件写入时刻为 UTC 01:25:32） | `2026-09-19 09:25:32` |
+| 维护页 `generatedAt` / 「最近更新」 | `2026-09-19 09:26:01` / `… 09:10:17` + `timeZone: Asia/Shanghai` |
+| CSV 表头 `exported:` | `2026-09-19 09:26:02` |
+| 设置页把站点时区改成 `UTC` 后再看「最近访问」 | 立刻变 `… 01:25:32`；改回 `Asia/Shanghai` 即恢复 |
+
+> 结论：把进程时区换成 UTC，线上显示的仍是北京时间 —— 与服务器时区真正解耦。
+> 上线后**必须重启** xl 实例（改到了 `core/**`）。
+
 ## [0.17.2] - 2026-09-15
 
 ### ✨ 后台编辑器侧边栏三项调整（使用方需求）

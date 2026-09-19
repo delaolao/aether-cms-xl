@@ -239,3 +239,72 @@ $a -eq $b
 好在复核 `git status`（只应出现本次有意改动的文件）时发现了。
 
 **每次复制后固定动作**：`git status --short` 看一眼 —— 出现意料之外的文件就是被覆盖了。
+
+## 时间与时区：约定与踩坑（2026-09-19，v0.17.3）
+
+### 两套约定（不要混）
+
+| 字段 | 约定 | 例子 |
+|---|---|---|
+| `publishDate` | **站点墙钟时间**（作者在编辑器里填的，无时区标记） | `2026-09-18T00:30` |
+| `createdAt` / `updatedAt` / 访问事件 `t` | **UTC ISO** | `2026-09-18T20:30:00.000Z` |
+
+渲染时**不能**直接 `new Date(publishDate)`（按进程时区解释，服务器换时区就整体偏移），
+也**不能**用 LiteNode 的 `{{ x | dateFormat(...) }}`（**默认 `useUTC=true`**：会把墙钟时间当 UTC
+再减 8 小时，于是北京时间 00:00–07:59 发布的文章显示成前一天）。统一走 `core/utils/time-utils.js`。
+
+### 站点时区从哪来
+
+`SITE_TIME_ZONE` 环境变量 → `content/data/settings.json` 的 `timeZone` → 默认 `Asia/Shanghai`。
+后台「设置 → 常规 → 站点时区」写的就是 `settings.json`；`configureSiteTimeZoneProvider()` 读的是
+`settingsService` 的**同步缓存**，所以**改完立刻生效、不用重启**（实测：改成 UTC → 「最近访问」变 01:25，
+改回 Asia/Shanghai → 09:25）。
+
+### 前台日期统一用 `metadata.displayDate`
+
+`prepareTemplateData()` 会给 `posts[].metadata`、`metadata`、`frontmatter` 预计算 `displayDate`
+（站点时区 `YYYY-MM-DD`）。模板里只写：
+
+```html
+<span class="post-date">{{ metadata.displayDate }}</span>
+```
+
+**新增主题/模板时请沿用这个字段**，不要再引入 `dateFormat`。当前 8 个模板已改：
+`default/templates/{index,collection,page-content,post-content}.html`、
+`ember/templates/{index,collection,page-content,post-content}.html`。
+
+### v0.17.3 需要部署的运行时代码文件
+
+| 组 | 文件 |
+|---|---|
+| 新模块 | `core/utils/time-utils.js` |
+| 核心接入 | `core/app.js`、`core/utils/route-utils.js`、`core/lib/content/utils/content-utils.js` |
+| 统计与维护 | `core/lib/analytics/analytics-store.js`、`core/utils/analytics-utils.js`、`core/lib/maintenance/site-doctor.js` |
+| 后台页面 | `core/admin/views/contents/settings.html`、`core/admin/static/js/i18n.js` |
+| 主题模板 | `content/themes/default/templates/`（4 个）、`content/themes/ember/templates/`（4 个） |
+
+> ⚠️ `content/themes/ember/templates/index.html` 是 **xl 仓独有**（首页改版过），
+> **不能**从引擎仓整文件覆盖；`core/api/content-api.js`、`admin/static/js/i18n.js` 同理（见上一节）。
+> 本批已确认 `core/utils/route-utils.js`、`core/admin/views/contents/settings.html`、
+> `core/admin/static/js/i18n.js` 此前**不在同步清单里**，已补进 `$ModifiedFiles`。
+
+### 本地怎么验证「与服务器时区解耦」
+
+```powershell
+# 在 xl 仓里，故意把进程时区设成 UTC，起一个临时实例（端口 8097）
+$env:TZ='UTC'; $env:PORT='8097'; node index.js
+```
+
+- `http://localhost:8097/`：`publishDate: 2026-09-18T00:30` 的文章必须显示 **2026-09-18**（不是 09-17）
+- 登录后 `/aether/analytics`：「最近访问」必须显示**北京时间**（比 UTC 多 8 小时）
+- `/aether/maintenance`：`generatedAt` 是北京时间且带 `"timeZone":"Asia/Shanghai"`
+
+Windows 上 Node 认 `TZ`（实测 `TZ=UTC` → `getTimezoneOffset()=0`），**不需要**改系统时区，
+所以"换时区验证"随时可做。
+
+### 换行符：两个仓并不一致（用脚本改代码前必看）
+
+实测：`core/app.js`（xl 仓）= CRLF，`core/admin/static/js/i18n.js`（xl 仓）= LF，引擎仓同文件又可能相反。
+用脚本做"字面替换"时，锚点里只要带 `\n`，在 CRLF 文件上就会**全部匹配失败**（本次 3 处 `NOMATCH` 就是这么来的，
+且因为没有断言，差点静默漏改）。做法：读入后先 `split("\r\n").join("\n")` 归一 → 替换 → 按原约定写回，
+改完再数一遍 `\r\n` 与孤立 `\n`，确认没有混用。
