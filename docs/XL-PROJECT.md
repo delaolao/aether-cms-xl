@@ -303,9 +303,21 @@ $env:TZ='UTC'; $env:PORT='8097'; node index.js
 Windows 上 Node 认 `TZ`（实测 `TZ=UTC` → `getTimezoneOffset()=0`），**不需要**改系统时区，
 所以"换时区验证"随时可做。
 
-### 换行符：两个仓并不一致（用脚本改代码前必看）
+### 编码与换行符：两个仓并不一致（用脚本/工具改代码前必看）
 
 实测：`core/app.js`（xl 仓）= CRLF，`core/admin/static/js/i18n.js`（xl 仓）= LF，引擎仓同文件又可能相反。
 用脚本做"字面替换"时，锚点里只要带 `\n`，在 CRLF 文件上就会**全部匹配失败**（本次 3 处 `NOMATCH` 就是这么来的，
 且因为没有断言，差点静默漏改）。做法：读入后先 `split("\r\n").join("\n")` 归一 → 替换 → 按原约定写回，
 改完再数一遍 `\r\n` 与孤立 `\n`，确认没有混用。
+
+**BOM**：`tools/*.ps1` 是「UTF-8 **带 BOM**」的 —— Windows PowerShell 5.1 对**无 BOM** 的 `.ps1` 按 ANSI
+解码，中文串会变乱码甚至整段解析失败（本次用编辑工具改了 `sync-today-to-server.ps1` 两处，BOM 被抹掉，
+实测解析出 **28 处**语法错误；补回 `EF BB BF` 后 0 错误）。这两个脚本还都**不入库**，坏了没法 `git checkout` 回来。
+改完请务必确认首个字节：
+
+```powershell
+$b = [System.IO.File]::ReadAllBytes($path); $b[0..2]   # 期望 239 187 191
+# 少了就补：$new = [byte[]](239,187,191) + $b
+```
+
+源码文件（`.js`/`.html`/`.md`）在库里**没有** BOM，保持现状即可。
