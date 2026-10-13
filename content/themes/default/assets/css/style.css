@@ -889,3 +889,57 @@ tbody tr:nth-child(even) {
     background: #fff;
 }
 .graph-noscript { color: #c0392b; }
+
+/* ==========================================================================
+   资料封面（PDF 第 1 页缩略 / 手动特色图）—— 2026-09-19
+   卡片读 metadata.featuredImage（videoCover 之后的回退）；文章页用 .post-lead 头图
+   生成入口：后台编辑器侧栏「PDF 封面」（core/admin/static/js/editor/modules/pdf-cover.js）
+   ========================================================================== */
+/* 资料封面沿用 .post-cover 的 16:9 框（基础样式在 /assets/aether-extras.css），
+   区别是没有播放按钮，右下角换成页数角标 */
+.post-cover.is-doc .post-cover-pages {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    padding: 0.15em 0.5em;
+    border-radius: 5px;
+    background: rgba(0, 0, 0, 0.72);
+    color: #fff;
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+}
+/* 卡片上的「资料信息条」：PDF · 12 页 · 2.4 MB */
+.card-filemeta {
+    display: inline-block;
+    margin: 0.35rem 0 0.6rem;
+    padding: 0.25rem 0.6rem;
+    border: 1px solid #dbe4ef;
+    border-radius: 999px;
+    background: #f4f8fd;
+    color: #0066cc;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+/* 文章页资料头图（放在正文之上，下载前先看得见内容） */
+.post-lead {
+    margin: 0 0 1.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #fff;
+    overflow: hidden;
+}
+.post-lead img {
+    display: block;
+    width: 100%;
+    max-height: 560px;
+    object-fit: contain;
+    background: #fff;
+}
+.post-lead figcaption {
+    padding: 0.6rem 1rem 0.7rem;
+    border-top: 1px solid #e5e7eb;
+    background: #f8f9fa;
+    color: #0066cc;
+    font-size: 0.86rem;
+    font-weight: 700;
+}

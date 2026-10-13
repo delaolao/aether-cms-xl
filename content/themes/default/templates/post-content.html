@@ -24,6 +24,16 @@
         </div>
     </header>
 
+    {{#if metadata.featuredImage}}
+    <!-- 资料封面（PDF 第 1 页缩略 / 手动特色图）：下载前先看得见内容 -->
+    <figure class="post-lead">
+        <img src="/content/uploads{{ metadata.featuredImage.url }}" alt="{{ metadata.title }}" loading="lazy" decoding="async" />
+        {{#if metadata.featuredImage.pdfFile}}
+        <figcaption>📕 资料预览{{#if metadata.featuredImage.pdfPages}} · 共 {{ metadata.featuredImage.pdfPages }} 页{{/if}}{{#if metadata.featuredImage.pdfSize}} · {{ metadata.featuredImage.pdfSize }}{{/if}}</figcaption>
+        {{/if}}
+    </figure>
+    {{/if}}
+
     <div class="post-content">{{ content }}</div>
 
     <footer class="post-footer">
