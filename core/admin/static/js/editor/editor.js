@@ -13,6 +13,7 @@ import { NavigationHandler } from "./modules/navigation-handler.js"
 import { MarkdownEditor } from "./markdown-editor/markdown-editor.js"
 import { MediaSelector } from "./media-selector/media-selector.js"
 import { EditorEnhancements } from "./modules/editor-enhancements.js"
+import { PdfCover } from "./modules/pdf-cover.js"
 import { relatedPostsManager } from "./modules/related-posts-manager.js"
 import { initEditorMarkdownExtensions } from "./markdown-editor/modules/editor-markdown-extensions.js"
 
@@ -59,6 +60,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Expose it to the global scope for debugging
     window.mediaSelector = mediaSelector
+
+    // PDF 封面生成：把正文里第一个 PDF 附件的第一页转成「特色图片」（2026-09-19）
+    const pdfCover = new PdfCover({
+        editorState,
+        markdownTextarea: formElements.content,
+        getTitle: () => (formElements.title ? formElements.title.value : ""),
+    })
+    pdfCover.init()
+    window.pdfCover = pdfCover
 
     // Initialize related posts manager
     relatedPostsManager.init()

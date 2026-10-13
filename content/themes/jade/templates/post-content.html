@@ -18,6 +18,18 @@
         </div>
     </header>
 
+    {{#if metadata.featuredImage}}
+    <!-- 资料封面：后台「PDF 封面」一键生成的是 PDF 第 1 页缩略图，这里做文章头图 -->
+    <div class="container">
+        <figure class="post-lead">
+            <img src="/content/uploads{{metadata.featuredImage.url}}" alt="{{metadata.title}}" loading="lazy" decoding="async" />
+            {{#if metadata.featuredImage.pdfFile}}
+            <figcaption>📕 资料预览{{#if metadata.featuredImage.pdfPages}} · 共 {{ metadata.featuredImage.pdfPages }} 页{{/if}}{{#if metadata.featuredImage.pdfSize}} · {{ metadata.featuredImage.pdfSize }}{{/if}}</figcaption>
+            {{/if}}
+        </figure>
+    </div>
+    {{/if}}
+
     <div class="container post-layout">
         <div class="post-main">
             <div class="post-content">{{ content }}</div>

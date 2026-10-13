@@ -396,3 +396,64 @@ screenshot.svg
 2. 新主题的 class 是否都在自己的 CSS 或 `aether-extras.css` 里有样式（否则布局会"塌"得莫名其妙）；
 3. 每个路由都点一遍：`/`、`/post/<slug>`、`/category/<名>`、`/stage/<学段>`、`/tag-cloud`、
    `/search?q=`、`/notes/graph`、`/videos`、`/sitemap.html`、一个不存在的路径（应 404）；
+
+## PDF 资料封面（2026-09-19，v0.17.6）
+
+### 为什么是"封面图"而不是"站内阅读器"
+
+使用方的真实诉求是两件事：**① 下载前能看见内容**、**② 资料卡片别只有标题**。
+评估过三条路：
+
+| 方案 | 成本 | 服务端负担 | 结论 |
+|---|---|---|---|
+| 封面图（PDF 第 1 页 → 图片） | 中 | **0**（在管理员浏览器里生成一次） | ✅ 采用：一次解决两个诉求，图片可缓存、可复用、可被分享卡使用 |
+| 站内阅读器（vendor pdf.js / iframe） | 中 | 0 | ⏸ 只解决①、不解决②；访客要多下 1.5 MB（vendor 版）→ 按需再加 |
+| 服务器端 PDF→图片（poppler 等） | 高 | **大**（子进程 + CPU + CJK 字体 + 缓存清理，且部署脚本不装系统依赖） | ❌ 明确不做 |
+
+另外两条"看着省事其实更糟"的路也被排除：**列表页**用客户端 pdf.js 生成缩略图（每张卡都要下整份 PDF）、
+为了缩略图在前台引入 pdf.js（访客白背 1.5 MB）。
+
+### 数据契约
+
+复用**现成的** `featuredImage` 字段，不新增字段（也就绕开了"保存丢字段"的老链路）：
+
+```yaml
+featuredImage:
+  id: "…"                        # 媒体库 id
+  url: "/images/xxx-cover-….jpg" # 相对 uploads，模板用 /content/uploads{{…}}
+  alt: 文章标题
+  source: pdf                    # 由「PDF 封面」生成时才有
+  pdfFile: documents/xxx.pdf     # 正文里那个附件指令的路径
+  pdfPages: 12                   # 页数（pdf.js 顺手拿到）
+  pdfSize: 2.4 MB                # 文件体积（取字节时拿到）
+```
+
+- 前台回退顺序：`metadata.videoCover`（视频封面）→ `metadata.featuredImage`（资料封面/手选图）
+- 卡片多一条 **资料信息条**（`.card-filemeta`：`📕 PDF · 12 页 · 2.4 MB`）
+- 文章页在正文之前渲染 `.post-lead` 头图 + `📕 资料预览 · 共 N 页 · 体积`
+
+### 生成流程（后台，管理员浏览器里）
+
+`core/admin/static/js/editor/modules/pdf-cover.js`：解析正文第一个 `[file:…pdf]`（口径与
+`core/lib/media/attachments.js` 一致：跳过代码块/行内代码）→ `fetch` 取字节 →
+`pdfjs.getDocument({ data })`（**用 data 而不是 URL**：LiteNode 静态服务没有 206，用 URL 会退化成整份下载）
+→ 渲染第 1 页到 canvas（**先铺白底**，否则 JPEG 是黑底）→ JPEG(0.85, 宽 1000px) →
+`POST /api/media/upload` → 写入 `featuredImage`（**直接调 `editorState.setFeaturedImage`**：
+`editorIntegration.setFeaturedImage()` 会把对象裁成 `{id,url,alt}`，`pdf*` 键会丢）。
+
+pdf.js 运行时用 `.\tools\fetch-pdfjs.ps1` 取件（npm pack 优先，失败再走 unpkg/jsDelivr/cdnjs），
+放 `core/admin/static/vendors/pdfjs/`，两个文件已在**同步清单第十六批**。取的是 **legacy** 构建
+（后台使用者浏览器版本参差）。
+
+### 已知边界（都不影响主流程，遇到再处理）
+
+- 服务端无 `Range`（206）→ pdf.js 只能整份读；本项目附件普遍 <10 MB，可接受；>30 MB 会先弹确认。
+- `.pdf` 是 `Cache-Control: no-cache`（带 ETag，未变更返回 304，不重传字节）；`.mjs/.js` 生产环境缓存 1 天。
+- `.wasm` 没有 MIME 映射（`node_modules` 不参与同步）→ 只有 **JPEG2000 图片/ICC 色彩**的 PDF 可能退化。
+- 中文 PDF 若**未嵌入字体**，pdf.js 可能需要 `cmaps/`（约 1.3 MB / 150+ 文件）；先不装，
+  真遇到"文字不显示"再加（同样要进同步清单）。
+- 使用 base-14 标准字体且**未嵌入**的 PDF，pdf.js 会提示 `standardFontDataUrl`（Node 下实测有该警告）：
+  浏览器里会退回**系统字体**渲染，缩略图照常出图，因此也没装 `standard_fonts/`。
+  Word/WPS 导出的 PDF 通常已嵌入字体，扫描件更是纯图片 —— 都不受影响。
+- 封面图是**实例数据**（`content/uploads/images/`，不入库），走既有 `tools/backup-content.ps1` 备份。
+- 手机端：pdf.js 渲染大页面会吃内存，所以封面选择"只渲染第 1 页 + 1000px 宽"。

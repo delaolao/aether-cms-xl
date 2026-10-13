@@ -884,6 +884,61 @@ body.theme-jade a:focus-visible {
 .side-block-links { background: linear-gradient(160deg, var(--jade-50) 0%, #fff 70%); }
 
 /* ==========================================================================
+   资料封面（PDF 第 1 页缩略 / 手动特色图）—— 2026-09-19
+   卡片读 metadata.featuredImage（videoCover 之后的回退）；文章页用 .post-lead 头图
+   生成入口：后台编辑器侧栏「PDF 封面」（core/admin/static/js/editor/modules/pdf-cover.js）
+   ========================================================================== */
+/* 资料封面沿用 .post-cover 的 16:9 框（样式来自 aether-extras.css），
+   区别是没有播放按钮，右下角换成页数角标 */
+.post-cover.is-doc .post-cover-pages {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    padding: 0.15em 0.5em;
+    border-radius: 5px;
+    background: rgba(11, 61, 56, 0.82);
+    color: #fff;
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+}
+/* 卡片上的「资料信息条」：PDF · 12 页 · 2.4 MB */
+.card-filemeta {
+    display: inline-block;
+    margin: 0 0 0.55rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: var(--radius-pill);
+    background: var(--jade-50);
+    border: 1px solid var(--line);
+    color: var(--jade-800);
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+/* 文章页头图 */
+.post-lead {
+    margin: 1.6rem 0 0;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+.post-lead img {
+    display: block;
+    width: 100%;
+    max-height: 520px;
+    object-fit: contain;
+    background: #fff;
+}
+.post-lead figcaption {
+    padding: 0.6rem 1rem 0.7rem;
+    border-top: 1px dashed var(--line-strong);
+    background: var(--jade-50);
+    color: var(--jade-800);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* ==========================================================================
    响应式
    ========================================================================== */
 @media (max-width: 1024px) {
