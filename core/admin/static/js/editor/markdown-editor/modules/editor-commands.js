@@ -99,6 +99,10 @@ export class EditorCommands {
                 // Do nothing here - our custom handler in editor-media.js will handle this
                 // This effectively prevents the default image insertion behavior
                 return
+            // 附件（PDF / Word / PPT…）：同样由专门的模块接管，这里只保证不插默认内容
+            case "attach":
+                // 见 core/admin/static/js/editor/modules/attachments-manager.js
+                return
             // Obsidian-style extensions
             case "wikilink":
                 this.insertWikiLink()

@@ -14,6 +14,7 @@ import { MarkdownEditor } from "./markdown-editor/markdown-editor.js"
 import { MediaSelector } from "./media-selector/media-selector.js"
 import { EditorEnhancements } from "./modules/editor-enhancements.js"
 import { PdfCover } from "./modules/pdf-cover.js"
+import { AttachmentsManager } from "./modules/attachments-manager.js"
 import { relatedPostsManager } from "./modules/related-posts-manager.js"
 import { initEditorMarkdownExtensions } from "./markdown-editor/modules/editor-markdown-extensions.js"
 
@@ -69,6 +70,14 @@ document.addEventListener("DOMContentLoaded", function () {
     })
     pdfCover.init()
     window.pdfCover = pdfCover
+
+    // 附件插入（工具栏「📎」）：上传新文件或从媒体库选文档 → 插入 [file:…] 附件块（2026-09-19）
+    const attachmentsManager = new AttachmentsManager({
+        markdownTextarea: formElements.content,
+        getTitle: () => (formElements.title ? formElements.title.value : ""),
+    })
+    attachmentsManager.init()
+    window.attachmentsManager = attachmentsManager
 
     // Initialize related posts manager
     relatedPostsManager.init()

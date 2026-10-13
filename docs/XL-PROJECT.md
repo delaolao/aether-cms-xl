@@ -413,6 +413,29 @@ screenshot.svg
 另外两条"看着省事其实更糟"的路也被排除：**列表页**用客户端 pdf.js 生成缩略图（每张卡都要下整份 PDF）、
 为了缩略图在前台引入 pdf.js（访客白背 1.5 MB）。
 
+### 插入附件（工具栏「📎」）—— v0.17.7
+
+给资源建设者用的入口：**编辑器工具栏 →📎 附件**，两项：
+
+1. **上传新文件** → `POST /api/media/upload`（字段名 `file`；非图片类型一律落 `documents/`）
+2. **从媒体库选择已有文档** → 复用媒体弹层（`#modal-media-filter` 本就有 Documents 选项）
+
+插入的正文指令是 `[file:<相对 uploads 的路径>|<显示名>]`，前台由
+`core/lib/media/attachments.js` 渲染成带图标、类型与体积的下载块（所有主题通用）。
+
+**两个必须记住的坑**：
+
+- **文件名会被服务端规范化**：`教学案例示例.pdf` → `-ba36722ef7cda039.pdf`（中文被剥掉、只留哈希）。
+  所以指令里的**显示名要用原始文件名**（`file.name` / `title` / `originalFilename`），
+  路径才用返回的 `url`/`filename`；两者混用会让附件行显示成一串哈希。
+- `media-selector.openModal()` 原先**硬编码** `this.filterType = "image"`，会把调用方设的过滤器覆盖掉 ——
+  新增"文档模式"时必须先修这里（已修成"仅在未设置时兜底为 image"）。
+
+**编辑器相关文件是清单事故重灾区**：`markdown-editor-toolbar.html`、`media-selector.js`、
+`editor-commands.js`、`editor.js`、新模块……这些是 CMS 原始安装文件，**改之前从来不需要登记清单**，
+一改就必须登记，否则改动永远推不到服务器（本项目已因此发生过 5 次同类问题）。
+改编辑器代码时的固定动作：先 grep 同步脚本确认目标文件在不在清单里。
+
 ### 数据契约
 
 复用**现成的** `featuredImage` 字段，不新增字段（也就绕开了"保存丢字段"的老链路）：

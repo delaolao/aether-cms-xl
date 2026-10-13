@@ -165,6 +165,35 @@ export class MediaSelector {
     }
 
     /**
+     * Open the media library filtered to DOCUMENTS, for inserting an attachment
+     * (`[file:…]`) into the body. Mirrors openImageSelector() — the modal itself
+     * already supports a Documents filter (partials/media-selection-modal.html).
+     */
+    openAttachmentSelector() {
+        this.selectionMode = "single"
+        this.filterType = "document"
+        this.selectedItems.clear()
+
+        this.selectionCallback = (selectedIds) => {
+            if (selectedIds.length > 0) {
+                const mediaItem = this.mediaItems.find((item) => item.id === selectedIds[0])
+                if (!mediaItem) return
+                if (window.attachmentsManager && typeof window.attachmentsManager.insertExisting === "function") {
+                    window.attachmentsManager.insertExisting(mediaItem)
+                }
+            }
+        }
+
+        // 不锁死过滤器：文档列表为空时，用户还能切到 Images/全部 自己找
+        uiMediaManager.showModal(
+            typeof window.__ === "function" ? window.__("attach_pickTitle") : "选择要插入的文档",
+            "document",
+            false
+        )
+        this.openModal()
+    }
+
+    /**
      * Open featured image selector
      */
     openFeaturedImageSelector() {
@@ -192,9 +221,10 @@ export class MediaSelector {
      * Open the media selection modal and load media items
      */
     async openModal() {
-        // Reset search query
+        // Reset search query（filterType 由调用方决定：图片选择器设 image、附件选择器设 document；
+        // 原先这里硬编码成 image，会把调用方的选择覆盖掉）
         this.searchQuery = ""
-        this.filterType = "image"
+        if (!this.filterType) this.filterType = "image"
 
         // Load media items
         await this.loadMediaItems()
