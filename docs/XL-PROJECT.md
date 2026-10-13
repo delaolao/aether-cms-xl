@@ -455,6 +455,11 @@ featuredImage:
 - 卡片多一条 **资料信息条**（`.card-filemeta`：`📕 PDF · 12 页 · 2.4 MB`）
 - 文章页在正文之前渲染 `.post-lead` 头图 + `📕 资料预览 · 共 N 页 · 体积`
 
+> ⚠️ **封面是主题无关的数据，但必须由主题渲染**。v0.17.6 只把渲染加到了 jade，结果线上
+> （ember）发了带 PDF 的文章后"只有链接、没有封面" —— 排查了半天才发现是主题没读 `featuredImage`。
+> 现在 `jade` 与 `ember` 都支持；**新主题/改主题时，记得把 `featuredImage` 的兜底渲染带上**
+> （卡片：`videoCover → featuredImage`；文章页：`.post-lead`）。
+
 ### 生成流程（后台，管理员浏览器里）
 
 `core/admin/static/js/editor/modules/pdf-cover.js`：解析正文第一个 `[file:…pdf]`（口径与

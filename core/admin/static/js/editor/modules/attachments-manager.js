@@ -272,6 +272,13 @@ export class AttachmentsManager {
 
     /* -------------------------------------------------- 顺手续上 PDF 封面 */
 
+    /**
+     * 插入 PDF 后**直接生成封面**（不再弹确认框）。
+     *
+     * 为什么改成自动：v0.17.7 用的是 `confirm()` 询问，实测出现过"以为生成了、其实没生成"
+     * —— 用户点 📎 的意图本来就是「放一份资料、让人在下载前能看见内容」，多问一次反而漏。
+     * 生成失败的提示由 pdf-cover 自己的状态栏给出（含"pdf.js 未安装"这类可执行提示）。
+     */
     offerCover(isPdf, count) {
         const status = tr("attach_inserted", { count }, `已插入 {count} 个附件`)
         if (!isPdf) {
@@ -279,11 +286,8 @@ export class AttachmentsManager {
             return
         }
         if (window.pdfCover && typeof window.pdfCover.generate === "function") {
-            const ok = window.confirm(tr("attach_offerCover", null, "已插入 PDF 附件。现在就把它生成封面吗？"))
-            if (ok) {
-                window.pdfCover.generate()
-                return
-            }
+            window.pdfCover.generate()
+            return
         }
         if (this.menu) this.setMenuStatus(status, "ok")
     }

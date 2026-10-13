@@ -31,6 +31,12 @@
                 <span class="post-cover-play" aria-hidden="true">▶</span>
                 {{#if metadata.videoCover.durationText}}<span class="post-cover-duration">{{ metadata.videoCover.durationText }}</span>{{/if}}
             </a>
+            {{#elseif metadata.featuredImage}}
+            <!-- 资料封面（PDF 第 1 页缩略 / 手动设置），与首页卡片同一约定 -->
+            <a class="post-cover is-doc" href="/post/{{metadata.slug}}">
+                <img src="/content/uploads{{metadata.featuredImage.url}}" alt="{{metadata.title}}" loading="lazy" decoding="async" />
+                {{#if metadata.featuredImage.pdfPages}}<span class="post-cover-pages">📕 {{ metadata.featuredImage.pdfPages }} 页</span>{{/if}}
+            </a>
             {{/if}}
             <div class="card-body">
                 <h2 class="card-title"><a href="/post/{{metadata.slug}}">{{metadata.title}}</a>{{#if metadata.mediaIcons.length}}<span class="post-media-badges">{{#each metadata.mediaIcons}}<span class="media-badge {{ type }}" title="{{ label }}">{{ icon }}</span>{{/each}}</span>{{/if}}</h2>
@@ -40,6 +46,9 @@
                     {{#if metadata.stage}}<a class="post-stage" href="/stage/{{metadata.stage}}" title="学段">{{metadata.stage}}</a>{{/if}}
                     <span class="post-views" title="阅读次数"> · 👁 {{ metadata.viewCount || 0 }}</span>
                 </div>
+                {{#if metadata.featuredImage.pdfFile}}
+                <p class="card-filemeta" title="附件资料">📕 PDF{{#if metadata.featuredImage.pdfPages}} · {{ metadata.featuredImage.pdfPages }} 页{{/if}}{{#if metadata.featuredImage.pdfSize}} · {{ metadata.featuredImage.pdfSize }}{{/if}}</p>
+                {{/if}}
                 {{#if tagsView.length}}
                 <div class="post-tags">
                     {{#each tagsView}}
